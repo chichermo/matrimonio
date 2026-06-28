@@ -42,7 +42,7 @@ export default function GuiaPage() {
               </Link>
             </li>
             <li>Termina el live en YouTube. Antes del matrimonio, vuelve a poner el ID real:{" "}
-              <strong>YI24lZAsQAk</strong>
+              <strong>izGrNpQGnhQ</strong>
             </li>
           </ol>
           <p className="text-foreground/60">
