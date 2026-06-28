@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { weddingConfig } from "@/lib/config";
+import { WeddingCountdown } from "@/components/WeddingCountdown";
 
 export default function HomePage() {
   return (
     <main className="flex-1 flex flex-col items-center justify-center px-6 py-16 text-center">
       <div className="absolute inset-0 bg-gradient-to-b from-gold-light/20 via-background to-rose/10 pointer-events-none" />
 
-      <div className="relative max-w-lg">
+      <div className="relative max-w-xl w-full">
         <p className="text-sm tracking-[0.4em] uppercase text-sage mb-4">
           {weddingConfig.weddingDate}
         </p>
@@ -21,9 +22,13 @@ export default function HomePage() {
         <p className="text-lg text-foreground/70 mb-2">
           Nos casamos en {weddingConfig.location}
         </p>
-        <p className="text-base text-foreground/60 mb-10">
+        <p className="text-base text-foreground/60 mb-8">
           Transmisión en vivo para nuestra familia en Chile
         </p>
+
+        <div className="mb-10">
+          <WeddingCountdown />
+        </div>
 
         <Link
           href="/vivo"

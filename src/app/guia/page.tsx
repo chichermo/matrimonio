@@ -26,20 +26,31 @@ export default function GuiaPage() {
         </div>
 
         <div className="rounded-xl border border-gold/30 bg-cream p-5">
-          <h2 className="font-semibold text-gold mb-3">2. Conectar con tu página web</h2>
-          <p className="mb-2">
-            Cuando empiece el live, copia el ID del video de la URL:
+          <h2 className="font-semibold text-gold mb-3">2. El ID de YouTube (NEXT_PUBLIC_YOUTUBE_VIDEO_ID)</h2>
+          <p className="mb-3">
+            Es la parte de la URL después de <code>v=</code>. Ejemplo:
           </p>
           <code className="block p-3 rounded-lg bg-white text-xs break-all border border-gold/20 mb-3">
-            youtube.com/watch?v=<strong>ESTE_ES_EL_ID</strong>
+            youtube.com/watch?v=<strong>dQw4w9WgXcQ</strong>
+            <br />
+            → el ID es: <strong>dQw4w9WgXcQ</strong>
           </code>
-          <p>
-            Ponlo en tu archivo <code>.env.local</code> como{" "}
-            <code>NEXT_PUBLIC_YOUTUBE_VIDEO_ID</code> y reinicia el servidor (o
-            actualiza la variable en Vercel y redeploy).
+          <p className="font-medium text-foreground mb-2">¿Puedo ponerlo antes de la transmisión?</p>
+          <p className="mb-2">
+            <strong>Sí</strong>, si programas el live en YouTube con anticipación:
+          </p>
+          <ol className="list-decimal list-inside space-y-2 mb-3">
+            <li>YouTube Studio → <strong>Crear</strong> → <strong>Transmitir en vivo</strong></li>
+            <li>Programa la fecha y hora (10 jul, 14:00 hora Bélgica)</li>
+            <li>YouTube te da una URL de inmediato — copia el ID aunque aún no hayas transmitido</li>
+            <li>Pégalo en Vercel en <code>NEXT_PUBLIC_YOUTUBE_VIDEO_ID</code></li>
+          </ol>
+          <p className="text-foreground/60">
+            Si no programas, solo tendrás el ID cuando pulses &quot;Iniciar transmisión&quot; ese día.
+            Mientras esté vacío, la página muestra el conteo regresivo.
           </p>
           {weddingConfig.youtubeVideoId && (
-            <p className="mt-2 text-xs text-sage">
+            <p className="mt-3 text-xs text-sage">
               ID actual configurado: {weddingConfig.youtubeVideoId}
             </p>
           )}

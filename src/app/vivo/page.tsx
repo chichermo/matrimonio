@@ -3,6 +3,7 @@ import { VideoFrame } from "@/components/VideoFrame";
 import { StreamPlayer } from "@/components/StreamPlayer";
 import { YouTubeLiveChat } from "@/components/YouTubeLiveChat";
 import { CaptionsHint } from "@/components/CaptionsHint";
+import { WeddingCountdown } from "@/components/WeddingCountdown";
 import Link from "next/link";
 
 export default function VivoPage() {
@@ -13,6 +14,12 @@ export default function VivoPage() {
       <div className="absolute inset-0 bg-gradient-to-b from-gold-light/15 via-background to-rose/5 pointer-events-none" />
 
       <div className="relative max-w-6xl mx-auto">
+        {!isLive && (
+          <div className="mb-6 max-w-2xl mx-auto">
+            <WeddingCountdown />
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-4">
             <VideoFrame
