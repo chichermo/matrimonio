@@ -137,25 +137,16 @@ export default function GuiaPage() {
         </div>
 
         <div className="rounded-xl border border-gold/30 bg-cream p-5">
-          <h2 className="font-semibold text-gold mb-3">5. Chat de mensajes (tu sitio)</h2>
-          <p className="mb-3">
-            El chat es del sitio web, no de YouTube. La familia escribe su nombre y un mensaje.
+          <h2 className="font-semibold text-gold mb-3">5. Chat de mensajes</h2>
+          <p className="mb-2">
+            Chat propio del sitio — sin cuentas extra. La familia escribe nombre + mensaje.
           </p>
-          <ol className="list-decimal list-inside space-y-2">
-            <li>
-              Crea proyecto en <strong>supabase.com</strong> (gratis)
-            </li>
-            <li>
-              SQL Editor → ejecuta el archivo <code>supabase/schema.sql</code>
-            </li>
-            <li>
-              Database → Replication → activa <strong>messages</strong>
-            </li>
-            <li>
-              En Vercel agrega <code>NEXT_PUBLIC_SUPABASE_URL</code> y{" "}
-              <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code>
-            </li>
-          </ol>
+          <ul className="list-disc list-inside space-y-1 text-foreground/80">
+            <li>Se abre <strong>15 min antes</strong> de la ceremonia (13:45 Bélgica)</li>
+            <li>Se cierra <strong>2 horas después</strong> de empezar</li>
+            <li>Los mensajes no se guardan para siempre — solo durante el evento</li>
+            <li>Para probar antes: en Vercel pon <code>CHAT_FORCE_OPEN=true</code></li>
+          </ul>
         </div>
 
         <div className="rounded-xl border border-gold/30 bg-cream p-5">

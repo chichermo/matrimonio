@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { createBrowserClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import type { ChatMessage } from "@/lib/types";
 
 function formatTime(iso: string) {
@@ -11,7 +10,11 @@ function formatTime(iso: string) {
   });
 }
 
-export function LiveChat() {
+interface LiveChatProps {
+  enabled: boolean;
+}
+
+export function LiveChat({ enabled }: LiveChatProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [author, setAuthor] = useState("");
   const [content, setContent] = useState("");
@@ -25,35 +28,27 @@ export function LiveChat() {
   }, []);
 
   useEffect(() => {
-    if (!isSupabaseConfigured()) return;
+    if (!enabled) {
+      setMessages([]);
+      return;
+    }
 
-    const supabase = createBrowserClient();
-    if (!supabase) return;
+    async function fetchMessages() {
+      try {
+        const res = await fetch("/api/messages", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.open) setMessages(data.messages ?? []);
+        else setMessages([]);
+      } catch {
+        // reintenta en el próximo poll
+      }
+    }
 
-    supabase
-      .from("messages")
-      .select("*")
-      .order("created_at", { ascending: true })
-      .limit(150)
-      .then(({ data }) => {
-        if (data) setMessages(data);
-      });
-
-    const channel = supabase
-      .channel("wedding-messages")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "messages" },
-        (payload) => {
-          setMessages((prev) => [...prev, payload.new as ChatMessage]);
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
+    fetchMessages();
+    const id = setInterval(fetchMessages, 3000);
+    return () => clearInterval(id);
+  }, [enabled]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -71,36 +66,35 @@ export function LiveChat() {
       return;
     }
 
-    if (!isSupabaseConfigured()) {
-      setError("El chat aún no está configurado");
-      return;
-    }
-
     localStorage.setItem("wedding-chat-author", trimmedAuthor);
     setSending(true);
 
     try {
-      const supabase = createBrowserClient();
-      if (!supabase) throw new Error("Sin conexión");
-
-      const { error: insertError } = await supabase.from("messages").insert({
-        author: trimmedAuthor,
-        content: trimmedContent,
+      const res = await fetch("/api/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ author: trimmedAuthor, content: trimmedContent }),
       });
 
-      if (insertError) throw insertError;
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error ?? "Error al enviar");
+      }
+
+      const msg = await res.json();
+      setMessages((prev) => [...prev, msg]);
       setContent("");
-    } catch {
-      setError("No se pudo enviar. Intenta de nuevo.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "No se pudo enviar. Intenta de nuevo.");
     } finally {
       setSending(false);
     }
   }
 
-  if (!isSupabaseConfigured()) {
+  if (!enabled) {
     return (
-      <div className="flex items-center justify-center h-full px-4 text-center text-sm text-foreground/60">
-        Chat en configuración — pronto podrás dejar mensajes aquí
+      <div className="flex items-center justify-center h-full px-4 text-center text-sm sm:text-base text-foreground/65">
+        El chat estará disponible cuando comience la transmisión
       </div>
     );
   }

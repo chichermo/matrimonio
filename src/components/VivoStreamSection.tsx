@@ -6,9 +6,11 @@ import { VideoFrame } from "@/components/VideoFrame";
 import { StreamPlayer } from "@/components/StreamPlayer";
 import { StreamChatPanel } from "@/components/StreamChatPanel";
 import { WeddingCountdown } from "@/components/WeddingCountdown";
+import { useChatOpen } from "@/hooks/useChatOpen";
 
 export function VivoStreamSection() {
   const [isStreaming, setIsStreaming] = useState(false);
+  const chatEnabled = useChatOpen(isStreaming);
 
   return (
     <>
@@ -33,7 +35,7 @@ export function VivoStreamSection() {
         </div>
 
         <div className="lg:col-span-1 min-w-0 flex flex-col">
-          <StreamChatPanel />
+          <StreamChatPanel chatEnabled={chatEnabled} />
         </div>
       </div>
     </>

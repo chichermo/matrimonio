@@ -4,48 +4,29 @@ Página web para transmitir tu matrimonio del **10 de julio** a tu familia en Ch
 
 ## Qué incluye
 
-- **Enlace** (`/vivo`) para compartir por WhatsApp
-- **Marco elegante** alrededor del video de YouTube
-- **Chat propio** — nombre + mensaje, en tiempo real (Supabase gratis)
-- **Subtítulos en español** — vía subtítulos automáticos de YouTube
+- **Video en vivo** vía YouTube (desde el teléfono)
+- **Marco elegante** en `/vivo`
+- **Chat propio** — nombre + mensaje, solo durante la transmisión (sin Supabase)
+- **Subtítulos** vía YouTube (CC → Traducir → Español)
 
-## Configuración
-
-```bash
-npm install
-cp .env.example .env.local
-```
-
-### 1. Variables básicas
+## Configuración en Vercel
 
 ```env
 NEXT_PUBLIC_COUPLE_NAMES=Liesbeth & Guillermo
 NEXT_PUBLIC_WEDDING_DATE=10 de Julio de 2026
+NEXT_PUBLIC_WEDDING_DATETIME=2026-07-10T14:00:00+02:00
 NEXT_PUBLIC_YOUTUBE_VIDEO_ID=izGrNpQGnhQ
+NEXT_PUBLIC_SITE_URL=https://matrimonio-coral.vercel.app
 ```
 
-### 2. Chat (Supabase — 5 minutos, gratis)
+Enlace para la familia: **https://matrimonio-coral.vercel.app/vivo**
 
-1. Crea cuenta en [supabase.com](https://supabase.com)
-2. Nuevo proyecto → **SQL Editor** → pega y ejecuta `supabase/schema.sql`
-3. **Database → Replication** → activa la tabla `messages`
-4. **Settings → API** → copia URL y `anon` key a Vercel:
+## Chat
 
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbG...
-```
+- Sin base de datos ni cuentas extra
+- Abierto desde **13:45** (15 min antes) hasta **2 h** después de la ceremonia
+- Los mensajes se borran solos al cerrarse la ventana
 
-### 3. Publicar en Vercel
-
-1. Importa el repo en [vercel.com](https://vercel.com)
-2. Agrega todas las variables de entorno
-3. Enlace final: `https://matrimonio-coral.vercel.app/vivo`
-
-## El día de la boda
-
-1. YouTube app → transmitir en vivo (no listado)
-2. Comparte `/vivo` por WhatsApp
-3. La familia ve el video y deja mensajes en el chat del sitio
+Para probar el chat antes del día: `CHAT_FORCE_OPEN=true` en Vercel.
 
 ¡Felicitaciones! 💒
