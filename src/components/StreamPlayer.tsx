@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { weddingConfig } from "@/lib/config";
+import { getWeddingDate, weddingConfig } from "@/lib/config";
 
 declare global {
   interface Window {
@@ -28,16 +28,15 @@ declare global {
 interface YTPlayer {
   loadModule: (name: string) => void;
   setOption: (module: string, option: string, value: unknown) => void;
-  getOption: (module: string, option: string) => unknown;
   playVideo: () => void;
   getDuration: () => number;
   seekTo: (seconds: number, allowSeekAhead: boolean) => void;
-  getPlayerState: () => number;
 }
 
 interface StreamPlayerProps {
   className?: string;
   fullscreen?: boolean;
+  onShowPlayerChange?: (showing: boolean) => void;
 }
 
 function enableSpanishCaptions(player: YTPlayer) {
@@ -48,12 +47,11 @@ function enableSpanishCaptions(player: YTPlayer) {
     try {
       player.setOption("captions", "track", {});
     } catch {
-      // YouTube aún no tiene pista de subtítulos (común al inicio del live)
+      // Sin pista de subtítulos aún
     }
   }
 }
 
-/** Salta al punto en vivo (no al inicio del buffer/grabación) */
 function seekToLiveEdge(player: YTPlayer) {
   try {
     const duration = player.getDuration();
@@ -62,12 +60,12 @@ function seekToLiveEdge(player: YTPlayer) {
       return;
     }
   } catch {
-    // getDuration no disponible aún
+    // ignore
   }
   try {
     player.seekTo(999999, true);
   } catch {
-    // El live aún no expone posición
+    // ignore
   }
 }
 
@@ -132,7 +130,6 @@ function YouTubePlayer({ videoId }: { videoId: string }) {
           scheduleLiveEdge(event.target);
           enableSpanishCaptions(event.target);
           setTimeout(() => enableSpanishCaptions(event.target), 3000);
-          setTimeout(() => enableSpanishCaptions(event.target), 10000);
         },
         onStateChange: (event) => {
           const { PLAYING, BUFFERING } = window.YT!.PlayerState;
@@ -150,7 +147,15 @@ function YouTubePlayer({ videoId }: { videoId: string }) {
   return <div ref={containerRef} className="absolute inset-0 w-full h-full" />;
 }
 
-function PresentationPoster({ message, submessage }: { message: string; submessage?: string }) {
+function PresentationPoster({
+  message,
+  submessage,
+  onWatchLive,
+}: {
+  message: string;
+  submessage?: string;
+  onWatchLive?: () => void;
+}) {
   const thumb = weddingConfig.thumbnailUrl;
 
   return (
@@ -163,33 +168,64 @@ function PresentationPoster({ message, submessage }: { message: string; submessa
         priority
         sizes="(max-width: 768px) 100vw, 900px"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/20" />
-      <div className="absolute inset-0 flex flex-col items-center justify-end pb-8 sm:pb-12 px-5 text-center">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/25" />
+      <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
         <p
-          className="text-2xl sm:text-3xl font-display font-semibold text-cream mb-2"
+          className="text-3xl sm:text-4xl font-display font-semibold text-cream mb-3"
           style={{ fontFamily: "var(--font-playfair)" }}
         >
           {weddingConfig.coupleNames}
+        </p>
+        <p className="text-sm sm:text-base tracking-wide uppercase text-gold-light/90 mb-4">
+          {weddingConfig.weddingDate} · {weddingConfig.location}
         </p>
         <p className="text-base sm:text-lg font-medium text-cream/95 max-w-md leading-relaxed">
           {message}
         </p>
         {submessage && (
-          <p className="text-sm sm:text-base text-cream/75 mt-2 max-w-sm">{submessage}</p>
+          <p className="text-sm sm:text-base text-cream/70 mt-2 max-w-sm">{submessage}</p>
+        )}
+        {onWatchLive && (
+          <button
+            type="button"
+            onClick={onWatchLive}
+            className="touch-target mt-6 px-6 py-3 rounded-full bg-gold text-white text-sm sm:text-base font-medium shadow-lg hover:bg-[#b8944a] transition-colors"
+          >
+            La transmisión ya comenzó — ver en vivo
+          </button>
         )}
       </div>
     </div>
   );
 }
 
-export function StreamPlayer({ className, fullscreen = false }: StreamPlayerProps) {
+export function StreamPlayer({ className, fullscreen = false, onShowPlayerChange }: StreamPlayerProps) {
   const { youtubeVideoId, offlineMessage } = weddingConfig;
+  const weddingDate = getWeddingDate();
+  const [showYouTube, setShowYouTube] = useState(false);
 
   const containerClass = fullscreen
     ? `relative w-full h-full min-h-[40vh] bg-black overflow-hidden ${className ?? ""}`
     : `relative w-full aspect-video bg-black overflow-hidden ${className ?? ""}`;
 
-  if (youtubeVideoId) {
+  useEffect(() => {
+    const checkAutoPlay = () => {
+      if (youtubeVideoId && Date.now() >= weddingDate.getTime()) {
+        setShowYouTube(true);
+      }
+    };
+    checkAutoPlay();
+    const id = setInterval(checkAutoPlay, 60000);
+    return () => clearInterval(id);
+  }, [youtubeVideoId, weddingDate]);
+
+  useEffect(() => {
+    onShowPlayerChange?.(showYouTube);
+  }, [showYouTube, onShowPlayerChange]);
+
+  const handleWatchLive = () => setShowYouTube(true);
+
+  if (youtubeVideoId && showYouTube) {
     return (
       <div className={containerClass}>
         <YouTubePlayer videoId={youtubeVideoId} />
@@ -201,7 +237,12 @@ export function StreamPlayer({ className, fullscreen = false }: StreamPlayerProp
     <div className={containerClass}>
       <PresentationPoster
         message={offlineMessage}
-        submessage="Actualiza esta página cuando comience la transmisión"
+        submessage={
+          youtubeVideoId
+            ? "La transmisión se conectará automáticamente el día de la boda"
+            : "Actualiza esta página cuando comience la transmisión"
+        }
+        onWatchLive={youtubeVideoId ? handleWatchLive : undefined}
       />
     </div>
   );
