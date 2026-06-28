@@ -15,6 +15,43 @@ export default function GuiaPage() {
       </p>
 
       <section className="space-y-6 text-sm text-foreground/80">
+        <div className="rounded-xl border border-gold/30 bg-gold-light/20 p-5">
+          <h2 className="font-semibold text-gold mb-3">Prueba antes del 10 de julio</h2>
+          <p className="mb-3">
+            Haz una transmisión de prueba de <strong>2–3 minutos</strong> para verificar que todo
+            funciona. Nadie de tu familia lo verá si usas <strong>No listado</strong> y no compartes
+            el enlace.
+          </p>
+          <ol className="list-decimal list-inside space-y-2 mb-3">
+            <li>
+              YouTube app → <strong>+</strong> → <strong>Transmitir en vivo</strong> →{" "}
+              <strong>No listado</strong>
+            </li>
+            <li>
+              Transmite 2 min (puede ser hacia una pared). Habla un poco para probar subtítulos.
+            </li>
+            <li>
+              Copia el ID del video (<code>watch?v=...</code>) y ponlo en Vercel en{" "}
+              <code>NEXT_PUBLIC_YOUTUBE_VIDEO_ID</code>
+            </li>
+            <li>Redeploy y abre <code>/vivo</code> en el celular y en la computadora</li>
+            <li>
+              Verifica: video, chat lateral, botón &quot;Abrir en YouTube&quot;, versión{" "}
+              <Link href="/tv" className="text-gold hover:underline">
+                /tv
+              </Link>
+            </li>
+            <li>Termina el live en YouTube. Antes del matrimonio, vuelve a poner el ID real:{" "}
+              <strong>YI24lZAsQAk</strong>
+            </li>
+          </ol>
+          <p className="text-foreground/60">
+            <strong>Tip:</strong> también puedes probar en local con{" "}
+            <code>npm run dev</code> y un archivo <code>.env.local</code> con el ID de la prueba,
+            sin tocar Vercel.
+          </p>
+        </div>
+
         <div className="rounded-xl border border-gold/30 bg-cream p-5">
           <h2 className="font-semibold text-gold mb-3">1. Transmitir desde el teléfono</h2>
           <ol className="list-decimal list-inside space-y-2">
