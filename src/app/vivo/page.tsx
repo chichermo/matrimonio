@@ -21,27 +21,32 @@ export default function VivoPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-          <div className="lg:col-span-2 space-y-3 sm:space-y-4 min-w-0">
-            <VideoFrame
-              coupleNames={weddingConfig.coupleNames}
-              weddingDate={weddingConfig.weddingDate}
-              location={weddingConfig.location}
-              isLive={isLive}
-            >
-              <StreamPlayer />
-            </VideoFrame>
-
-            <CaptionsHint />
-            <WatchOnTv />
+        {/* Video + chat a la misma altura */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:items-stretch">
+          <div className="lg:col-span-2 min-w-0 flex">
+            <div className="w-full">
+              <VideoFrame
+                coupleNames={weddingConfig.coupleNames}
+                weddingDate={weddingConfig.weddingDate}
+                location={weddingConfig.location}
+                isLive={isLive}
+              >
+                <StreamPlayer />
+              </VideoFrame>
+            </div>
           </div>
 
-          <div className="lg:col-span-1 min-w-0">
+          <div className="lg:col-span-1 min-w-0 flex flex-col">
             <StreamChatPanel
               youtubeVideoId={weddingConfig.youtubeVideoId}
               isLive={isLive}
             />
           </div>
+        </div>
+
+        <div className="mt-4 sm:mt-6 space-y-3 sm:space-y-4">
+          <CaptionsHint />
+          <WatchOnTv />
         </div>
 
         <nav className="flex flex-wrap justify-center gap-x-3 gap-y-1 text-xs text-foreground/40 mt-6 sm:mt-8">
