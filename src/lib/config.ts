@@ -9,6 +9,8 @@ export const weddingConfig = {
   belgiumTimezone: "Europe/Brussels",
   chileTimezone: "America/Santiago",
   youtubeVideoId: process.env.NEXT_PUBLIC_YOUTUBE_VIDEO_ID ?? "",
+  thumbnailUrl:
+    process.env.NEXT_PUBLIC_WEDDING_THUMBNAIL ?? "/wedding-thumbnail.jpg",
   offlineMessage:
     process.env.NEXT_PUBLIC_OFFLINE_MESSAGE ??
     "La transmisión comenzará pronto. ¡Gracias por acompañarnos desde Chile!",

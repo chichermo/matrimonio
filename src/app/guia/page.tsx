@@ -94,7 +94,25 @@ export default function GuiaPage() {
         </div>
 
         <div className="rounded-xl border border-gold/30 bg-cream p-5">
-          <h2 className="font-semibold text-gold mb-3">3. Activar subtítulos automáticos</h2>
+          <h2 className="font-semibold text-gold mb-3">3. Miniatura y subtítulos en YouTube Studio</h2>
+          <p className="font-medium mb-2">Miniatura del video</p>
+          <ol className="list-decimal list-inside space-y-2 mb-4">
+            <li>YouTube Studio → tu transmisión → <strong>Miniatura</strong></li>
+            <li>Sube una foto vuestra (recomendado 1280×720)</li>
+            <li>Esa imagen se ve en YouTube antes y al compartir el link de YouTube</li>
+          </ol>
+          <p className="font-medium mb-2">Subtítulos automáticos (obligatorio para CC)</p>
+          <ol className="list-decimal list-inside space-y-2">
+            <li>YouTube Studio → tu transmisión → <strong>Subtítulos</strong></li>
+            <li>Activa <strong>Subtítulos automáticos</strong></li>
+            <li>Idioma de la ceremonia: holandés, francés o inglés</li>
+            <li>Tardan ~30 s en aparecer después de que alguien hable</li>
+            <li>En la página: CC → Traducir automáticamente → Español</li>
+          </ol>
+        </div>
+
+        <div className="rounded-xl border border-gold/30 bg-cream p-5">
+          <h2 className="font-semibold text-gold mb-3">4. Activar subtítulos en español (familia)</h2>
           <ol className="list-decimal list-inside space-y-2">
             <li>En YouTube Studio → tu transmisión → <strong>Configuración</strong></li>
             <li>Activa <strong>Subtítulos automáticos</strong> (o CC en vivo)</li>
@@ -103,7 +121,7 @@ export default function GuiaPage() {
         </div>
 
         <div className="rounded-xl border border-gold/30 bg-cream p-5">
-          <h2 className="font-semibold text-gold mb-3">4. Compartir con Chile</h2>
+          <h2 className="font-semibold text-gold mb-3">5. Compartir con Chile</h2>
           <p className="mb-2">Envía por WhatsApp el enlace de tu sitio:</p>
           <code className="block p-3 rounded-lg bg-white text-xs break-all border border-gold/20">
             https://matrimonio-coral.vercel.app/vivo
@@ -114,7 +132,7 @@ export default function GuiaPage() {
         </div>
 
         <div className="rounded-xl border border-gold/30 bg-cream p-5">
-          <h2 className="font-semibold text-gold mb-3">5. Ver en Smart TV</h2>
+          <h2 className="font-semibold text-gold mb-3">6. Ver en Smart TV</h2>
           <ol className="list-decimal list-inside space-y-2">
             <li>
               <strong>Más fácil:</strong> app YouTube en la TV → abrir la transmisión programada

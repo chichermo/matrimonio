@@ -23,6 +23,14 @@ export const metadata: Metadata = {
     description: `Transmisión en vivo de nuestra boda desde ${weddingConfig.location}`,
     type: "website",
     url: getVivoPageUrl(),
+    images: [
+      {
+        url: `${weddingConfig.siteUrl.replace(/\/$/, "")}${weddingConfig.thumbnailUrl}`,
+        width: 1200,
+        height: 675,
+        alt: `${weddingConfig.coupleNames} — boda en vivo`,
+      },
+    ],
   },
   appleWebApp: {
     capable: true,
