@@ -65,27 +65,25 @@ export function VideoFrame({
 
           <div className={`text-center ${compact ? "mb-2 sm:mb-3" : "mb-3 sm:mb-6"} px-1 sm:px-4`}>
             {!compact && (
-              <p className="text-[10px] sm:text-sm tracking-[0.2em] sm:tracking-[0.3em] uppercase text-sage mb-1">
+              <p className="text-sm sm:text-base font-semibold tracking-wide uppercase text-foreground/75 mb-2">
                 Transmisión en vivo
               </p>
             )}
             <h1
               className={`font-display font-semibold text-foreground tracking-wide leading-tight ${
-                compact
-                  ? "text-xl sm:text-2xl"
-                  : "text-xl xs:text-2xl sm:text-4xl"
+                compact ? "text-xl sm:text-2xl" : "text-2xl sm:text-4xl"
               }`}
               style={{ fontFamily: "var(--font-playfair)" }}
             >
               {coupleNames}
             </h1>
-            <p className="text-xs sm:text-base text-foreground/70 mt-1">
+            <p className="text-sm sm:text-base text-foreground/80 mt-1.5">
               {weddingDate} · {location}
             </p>
             {isLive && (
-              <div className="inline-flex items-center gap-2 mt-2 sm:mt-3 px-2.5 sm:px-3 py-1 rounded-full bg-rose/20 border border-rose/40">
-                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse-live" />
-                <span className="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-red-700">
+              <div className="inline-flex items-center gap-2 mt-3 px-3 py-1.5 rounded-full bg-rose/20 border border-rose/40">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse-live" />
+                <span className="text-xs sm:text-sm font-semibold uppercase tracking-wide text-red-800">
                   En vivo
                 </span>
               </div>
@@ -97,7 +95,7 @@ export function VideoFrame({
           </div>
 
           {!compact && (
-            <p className="text-center text-[10px] sm:text-xs text-foreground/50 mt-3 sm:mt-4 tracking-wide sm:tracking-widest px-2">
+            <p className="text-center text-sm text-foreground/70 mt-4 tracking-wide px-2">
               Con amor desde Bélgica · Para nuestra familia en Chile
             </p>
           )}

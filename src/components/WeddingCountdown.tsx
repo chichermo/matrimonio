@@ -13,12 +13,12 @@ function CountdownUnit({ value, label }: { value: number; label: string }) {
   return (
     <div className="flex flex-col items-center">
       <span
-        className="text-2xl sm:text-4xl md:text-5xl font-display font-semibold tabular-nums text-foreground"
+        className="text-3xl sm:text-4xl md:text-5xl font-display font-semibold tabular-nums text-foreground"
         style={{ fontFamily: "var(--font-playfair)" }}
       >
         {String(value).padStart(2, "0")}
       </span>
-      <span className="text-[10px] sm:text-sm uppercase tracking-wider text-foreground/50 mt-0.5 sm:mt-1">
+      <span className="text-xs sm:text-sm uppercase tracking-wide font-medium text-foreground/75 mt-1">
         {label}
       </span>
     </div>
@@ -27,7 +27,7 @@ function CountdownUnit({ value, label }: { value: number; label: string }) {
 
 function CountdownDigits({ countdown }: { countdown: CountdownState }) {
   return (
-    <div className="grid grid-cols-4 gap-1 sm:gap-3 max-w-xs sm:max-w-none mx-auto sm:flex sm:justify-center sm:gap-6">
+    <div className="grid grid-cols-4 gap-2 sm:gap-3 max-w-sm sm:max-w-none mx-auto sm:flex sm:justify-center sm:gap-8">
       <CountdownUnit value={countdown.days} label="días" />
       <CountdownUnit value={countdown.hours} label="horas" />
       <CountdownUnit value={countdown.minutes} label="min" />
@@ -64,13 +64,13 @@ export function WeddingCountdown({ compact = false }: WeddingCountdownProps) {
         }`}
       >
         <p
-          className="text-lg sm:text-xl font-display text-gold"
+          className="text-xl sm:text-2xl font-display text-gold"
           style={{ fontFamily: "var(--font-playfair)" }}
         >
           ¡Es el gran día!
         </p>
         {!compact && (
-          <p className="text-xs sm:text-sm text-foreground/60 mt-2 px-2">
+          <p className="text-sm sm:text-base text-foreground/80 mt-3 px-2">
             La ceremonia comenzó a las {belgium.time} en Bélgica · {chile.time} en Chile
           </p>
         )}
@@ -81,23 +81,27 @@ export function WeddingCountdown({ compact = false }: WeddingCountdownProps) {
   return (
     <div
       className={`text-center ${
-        compact ? "" : "rounded-xl border border-gold/25 bg-cream/80 px-3 sm:px-6 py-5 sm:py-8"
+        compact ? "" : "rounded-xl border border-gold/25 bg-cream/80 px-4 sm:px-6 py-6 sm:py-8"
       }`}
     >
       {!compact && (
         <>
-          <p className="text-xs sm:text-sm tracking-[0.2em] sm:tracking-[0.25em] uppercase text-sage mb-3 sm:mb-4">
+          <p className="text-sm sm:text-base font-semibold tracking-wide uppercase text-foreground/80 mb-4">
             Faltan para la ceremonia
           </p>
-          <div className="flex flex-col gap-2 sm:flex-row sm:justify-center sm:gap-8 mb-4 sm:mb-6 text-xs sm:text-sm text-foreground/70 px-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:justify-center sm:gap-10 mb-5 sm:mb-6 text-sm sm:text-base text-foreground/85 px-2">
             <div className="flex items-center justify-center gap-2">
-              <span aria-hidden>🇧🇪</span>
+              <span className="text-lg" aria-hidden>
+                🇧🇪
+              </span>
               <span>
                 <strong>Bélgica:</strong> {belgium.time}
               </span>
             </div>
             <div className="flex items-center justify-center gap-2">
-              <span aria-hidden>🇨🇱</span>
+              <span className="text-lg" aria-hidden>
+                🇨🇱
+              </span>
               <span>
                 <strong>Chile:</strong> {chile.time}
               </span>
@@ -109,13 +113,13 @@ export function WeddingCountdown({ compact = false }: WeddingCountdownProps) {
       <CountdownDigits countdown={countdown} />
 
       {!compact && (
-        <p className="text-[11px] sm:text-xs text-foreground/45 mt-4 sm:mt-5 capitalize px-2 leading-relaxed">
+        <p className="text-sm sm:text-base text-foreground/70 mt-5 sm:mt-6 capitalize px-2 leading-relaxed">
           {belgium.full} · En Chile: {chile.time}
         </p>
       )}
 
       {countdown.isToday && !compact && (
-        <p className="mt-2 sm:mt-3 text-sm font-medium text-gold animate-pulse-live">
+        <p className="mt-3 text-base sm:text-lg font-semibold text-gold animate-pulse-live">
           ¡Hoy es el día!
         </p>
       )}

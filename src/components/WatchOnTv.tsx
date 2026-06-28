@@ -22,21 +22,21 @@ export function WatchOnTv() {
   return (
     <div className="rounded-xl border border-gold/25 bg-cream/90 px-4 py-4 sm:px-5 sm:py-5">
       <h2
-        className="text-base sm:text-lg font-display font-semibold mb-1"
+        className="text-lg sm:text-xl font-display font-semibold mb-1"
         style={{ fontFamily: "var(--font-playfair)" }}
       >
         ¿Ver en Smart TV?
       </h2>
-      <p className="text-xs sm:text-sm text-foreground/60 mb-4">
+      <p className="text-sm sm:text-base text-foreground/75 mb-4">
         Tres formas fáciles para ver en televisor
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
         <div className="rounded-lg bg-white border border-gold/15 p-3 sm:p-4">
-          <p className="text-xs font-semibold text-gold uppercase tracking-wide mb-1">
+          <p className="text-sm font-semibold text-gold uppercase tracking-wide mb-2">
             Opción 1 · La más fácil
           </p>
-          <p className="text-sm text-foreground/80 mb-3">
+          <p className="text-sm sm:text-base text-foreground/85 mb-3">
             Abre la app <strong>YouTube</strong> en tu TV y busca la transmisión, o usa este enlace:
           </p>
           {youtubeLive ? (
@@ -54,7 +54,7 @@ export function WatchOnTv() {
         </div>
 
         <div className="rounded-lg bg-white border border-gold/15 p-3 sm:p-4">
-          <p className="text-xs font-semibold text-gold uppercase tracking-wide mb-1">
+          <p className="text-sm font-semibold text-gold uppercase tracking-wide mb-2">
             Opción 2 · Chromecast
           </p>
           <p className="text-sm text-foreground/80">
@@ -64,10 +64,10 @@ export function WatchOnTv() {
         </div>
 
         <div className="rounded-lg bg-white border border-gold/15 p-3 sm:p-4">
-          <p className="text-xs font-semibold text-gold uppercase tracking-wide mb-1">
+          <p className="text-sm font-semibold text-gold uppercase tracking-wide mb-2">
             Opción 3 · Navegador de TV
           </p>
-          <p className="text-sm text-foreground/80 mb-3">
+          <p className="text-sm sm:text-base text-foreground/85 mb-3">
             En Samsung, LG o Android TV, abre el navegador y visita la versión para TV:
           </p>
           <Link
