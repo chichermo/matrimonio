@@ -102,13 +102,29 @@ export default function GuiaPage() {
             <li>Esa imagen se ve en YouTube antes y al compartir el link de YouTube</li>
           </ol>
           <p className="font-medium mb-2">Subtítulos automáticos (obligatorio para CC)</p>
-          <ol className="list-decimal list-inside space-y-2">
+          <ol className="list-decimal list-inside space-y-2 mb-4">
             <li>YouTube Studio → tu transmisión → <strong>Subtítulos</strong></li>
             <li>Activa <strong>Subtítulos automáticos</strong></li>
             <li>Idioma de la ceremonia: holandés, francés o inglés</li>
             <li>Tardan ~30 s en aparecer después de que alguien hable</li>
             <li>En la página: CC → Traducir automáticamente → Español</li>
           </ol>
+          <p className="font-medium mb-2">Al recargar la página (punto en vivo)</p>
+          <ol className="list-decimal list-inside space-y-2">
+            <li>
+              YouTube Studio → tu transmisión → <strong>Configuración</strong> →{" "}
+              <strong>Opciones adicionales</strong>
+            </li>
+            <li>
+              Desactiva <strong>DVR</strong> (rebobinado) — así quien recargue ve el momento actual, no
+              el inicio
+            </li>
+            <li>Latencia: <strong>Ultra baja</strong> si está disponible</li>
+          </ol>
+          <p className="text-foreground/60 mt-2">
+            Si la transmisión ya terminó, al recargar siempre verán el video desde el principio (es una
+            grabación, no en vivo).
+          </p>
         </div>
 
         <div className="rounded-xl border border-gold/30 bg-cream p-5">

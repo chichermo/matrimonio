@@ -19,7 +19,7 @@ declare global {
           };
         }
       ) => YTPlayer;
-      PlayerState: { PLAYING: number };
+      PlayerState: { PLAYING: number; BUFFERING: number };
     };
     onYouTubeIframeAPIReady?: () => void;
   }
@@ -30,6 +30,9 @@ interface YTPlayer {
   setOption: (module: string, option: string, value: unknown) => void;
   getOption: (module: string, option: string) => unknown;
   playVideo: () => void;
+  getDuration: () => number;
+  seekTo: (seconds: number, allowSeekAhead: boolean) => void;
+  getPlayerState: () => number;
 }
 
 interface StreamPlayerProps {
@@ -48,6 +51,31 @@ function enableSpanishCaptions(player: YTPlayer) {
       // YouTube aún no tiene pista de subtítulos (común al inicio del live)
     }
   }
+}
+
+/** Salta al punto en vivo (no al inicio del buffer/grabación) */
+function seekToLiveEdge(player: YTPlayer) {
+  try {
+    const duration = player.getDuration();
+    if (duration > 0) {
+      player.seekTo(duration, true);
+      return;
+    }
+  } catch {
+    // getDuration no disponible aún
+  }
+  try {
+    player.seekTo(999999, true);
+  } catch {
+    // El live aún no expone posición
+  }
+}
+
+function scheduleLiveEdge(player: YTPlayer) {
+  seekToLiveEdge(player);
+  [1000, 3000, 8000].forEach((ms) => {
+    setTimeout(() => seekToLiveEdge(player), ms);
+  });
 }
 
 function YouTubePlayer({ videoId }: { videoId: string }) {
@@ -101,12 +129,17 @@ function YouTubePlayer({ videoId }: { videoId: string }) {
       },
       events: {
         onReady: (event) => {
+          scheduleLiveEdge(event.target);
           enableSpanishCaptions(event.target);
           setTimeout(() => enableSpanishCaptions(event.target), 3000);
           setTimeout(() => enableSpanishCaptions(event.target), 10000);
         },
         onStateChange: (event) => {
-          if (event.data === window.YT!.PlayerState.PLAYING) {
+          const { PLAYING, BUFFERING } = window.YT!.PlayerState;
+          if (event.data === PLAYING || event.data === BUFFERING) {
+            seekToLiveEdge(event.target);
+          }
+          if (event.data === PLAYING) {
             enableSpanishCaptions(event.target);
           }
         },
