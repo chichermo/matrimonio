@@ -4,16 +4,22 @@ import { weddingConfig } from "@/lib/config";
 
 interface StreamPlayerProps {
   className?: string;
+  /** Pantalla completa para Smart TV */
+  fullscreen?: boolean;
 }
 
-export function StreamPlayer({ className }: StreamPlayerProps) {
+export function StreamPlayer({ className, fullscreen = false }: StreamPlayerProps) {
   const { youtubeVideoId, offlineMessage } = weddingConfig;
+
+  const containerClass = fullscreen
+    ? `relative w-full h-full min-h-[40vh] bg-black ${className ?? ""}`
+    : `relative w-full aspect-video bg-black ${className ?? ""}`;
 
   if (youtubeVideoId) {
     return (
-      <div className={`relative w-full aspect-video bg-black ${className ?? ""}`}>
+      <div className={containerClass}>
         <iframe
-          src={`https://www.youtube.com/embed/${youtubeVideoId}?autoplay=1&mute=0&cc_load_policy=1&cc_lang_pref=es&hl=es&rel=0&modestbranding=1`}
+          src={`https://www.youtube.com/embed/${youtubeVideoId}?autoplay=1&mute=0&cc_load_policy=1&cc_lang_pref=es&hl=es&rel=0&modestbranding=1&playsinline=1`}
           title="Transmisión en vivo"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
@@ -25,12 +31,12 @@ export function StreamPlayer({ className }: StreamPlayerProps) {
 
   return (
     <div
-      className={`relative w-full aspect-video bg-gradient-to-br from-foreground/5 to-foreground/10 flex items-center justify-center ${className ?? ""}`}
+      className={`${containerClass} bg-gradient-to-br from-foreground/5 to-foreground/10 flex items-center justify-center`}
     >
-      <div className="text-center px-6 max-w-md">
-        <div className="w-16 h-16 mx-auto mb-4 rounded-full border-2 border-gold/40 flex items-center justify-center">
+      <div className="text-center px-4 sm:px-6 max-w-md">
+        <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-full border-2 border-gold/40 flex items-center justify-center">
           <svg
-            className="w-8 h-8 text-gold"
+            className="w-6 h-6 sm:w-8 sm:h-8 text-gold"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -44,8 +50,8 @@ export function StreamPlayer({ className }: StreamPlayerProps) {
             />
           </svg>
         </div>
-        <p className="text-lg font-medium text-foreground/80">{offlineMessage}</p>
-        <p className="text-sm text-foreground/50 mt-2">
+        <p className="text-base sm:text-lg font-medium text-foreground/80">{offlineMessage}</p>
+        <p className="text-xs sm:text-sm text-foreground/50 mt-2">
           Actualiza esta página cuando comience la transmisión
         </p>
       </div>

@@ -15,7 +15,7 @@ export function YouTubeLiveChat({ videoId }: YouTubeLiveChatProps) {
 
   if (!embedDomain) {
     return (
-      <div className="flex items-center justify-center h-full min-h-[320px] text-sm text-foreground/40">
+      <div className="flex items-center justify-center h-full min-h-[280px] text-sm text-foreground/40">
         Cargando chat...
       </div>
     );
@@ -25,7 +25,7 @@ export function YouTubeLiveChat({ videoId }: YouTubeLiveChatProps) {
     <iframe
       src={`https://www.youtube.com/live_chat?v=${videoId}&embed_domain=${embedDomain}`}
       title="Chat en vivo"
-      className="w-full h-full min-h-[320px] sm:min-h-[400px] border-0"
+      className="w-full h-full min-h-[280px] border-0"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
     />
   );

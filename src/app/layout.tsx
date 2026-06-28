@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Playfair_Display } from "next/font/google";
 import "./globals.css";
-import { weddingConfig } from "@/lib/config";
+import { weddingConfig, getVivoPageUrl } from "@/lib/config";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -22,7 +22,21 @@ export const metadata: Metadata = {
     title: `${weddingConfig.coupleNames} — En vivo`,
     description: `Transmisión en vivo de nuestra boda desde ${weddingConfig.location}`,
     type: "website",
+    url: getVivoPageUrl(),
   },
+  appleWebApp: {
+    capable: true,
+    title: weddingConfig.coupleNames,
+    statusBarStyle: "default",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: "cover",
+  themeColor: "#c9a962",
 };
 
 export default function RootLayout({
@@ -32,7 +46,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${cormorant.variable} ${playfair.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col safe-px safe-pb">{children}</body>
     </html>
   );
 }

@@ -69,12 +69,29 @@ export default function GuiaPage() {
           <h2 className="font-semibold text-gold mb-3">4. Compartir con Chile</h2>
           <p className="mb-2">Envía por WhatsApp el enlace de tu sitio:</p>
           <code className="block p-3 rounded-lg bg-white text-xs break-all border border-gold/20">
-            https://tu-sitio.vercel.app/vivo
+            https://matrimonio-coral.vercel.app/vivo
           </code>
           <p className="mt-2 text-foreground/60">
-            Ahí verán el video con marco bonito, el chat de YouTube integrado e
-            instrucciones para los subtítulos en español.
+            Para Smart TV: <code className="text-xs">/tv</code> o la app YouTube en el televisor.
           </p>
+        </div>
+
+        <div className="rounded-xl border border-gold/30 bg-cream p-5">
+          <h2 className="font-semibold text-gold mb-3">5. Ver en Smart TV</h2>
+          <ol className="list-decimal list-inside space-y-2">
+            <li>
+              <strong>Más fácil:</strong> app YouTube en la TV → abrir la transmisión programada
+            </li>
+            <li>
+              <strong>Chromecast:</strong> desde el celular en <code>/vivo</code>, transmitir el video
+            </li>
+            <li>
+              <strong>Navegador de TV:</strong> abrir{" "}
+              <Link href="/tv" className="text-gold hover:underline">
+                matrimonio-coral.vercel.app/tv
+              </Link>
+            </li>
+          </ol>
         </div>
       </section>
 
