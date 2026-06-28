@@ -1,27 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { YouTubeLiveChat } from "@/components/YouTubeLiveChat";
+import { LiveChat } from "@/components/LiveChat";
 
-interface StreamChatPanelProps {
-  youtubeVideoId: string;
-  isLive: boolean;
-}
+export function StreamChatPanel() {
+  const [showChat, setShowChat] = useState(true);
 
-export function StreamChatPanel({ youtubeVideoId, isLive }: StreamChatPanelProps) {
-  const [showChat, setShowChat] = useState(false);
-
-  const chatContent = isLive ? (
-    <YouTubeLiveChat videoId={youtubeVideoId} />
-  ) : (
-    <div className="flex items-center justify-center h-full px-4 text-center text-sm sm:text-base text-foreground/65">
-      El chat estará disponible cuando comience la transmisión
+  const chatPanel = (
+    <div className="flex flex-col h-full min-h-0 bg-white">
+      <LiveChat />
     </div>
   );
 
   return (
     <>
-      {/* Móvil / tablet: chat colapsable, altura ~16:9 como el video */}
+      {/* Móvil / tablet: chat colapsable */}
       <div className="lg:hidden w-full">
         <button
           type="button"
@@ -34,17 +27,17 @@ export function StreamChatPanel({ youtubeVideoId, isLive }: StreamChatPanelProps
               className="font-display font-semibold text-lg"
               style={{ fontFamily: "var(--font-playfair)" }}
             >
-              Mensajes en vivo
+              Mensajes para Liesbeth & Guillermo
             </span>
-            <p className="text-sm text-foreground/75 mt-0.5">Chat de YouTube</p>
+            <p className="text-sm text-foreground/75 mt-0.5">Deja tus buenos deseos</p>
           </div>
           <span className="text-gold text-xl font-light" aria-hidden>
             {showChat ? "−" : "+"}
           </span>
         </button>
         {showChat && (
-          <div className="mt-3 rounded-xl bg-cream border border-gold/25 shadow-sm overflow-hidden h-[50vw] max-h-[320px] min-h-[200px]">
-            <div className="h-full bg-white">{chatContent}</div>
+          <div className="mt-3 rounded-xl bg-cream border border-gold/25 shadow-sm overflow-hidden h-[50vw] max-h-[360px] min-h-[240px]">
+            {chatPanel}
           </div>
         )}
       </div>
@@ -56,11 +49,11 @@ export function StreamChatPanel({ youtubeVideoId, isLive }: StreamChatPanelProps
             className="text-lg font-display font-semibold leading-tight"
             style={{ fontFamily: "var(--font-playfair)" }}
           >
-            Mensajes en vivo
+            Mensajes para la pareja
           </h2>
-          <p className="text-xs text-foreground/75">Chat de YouTube</p>
+          <p className="text-xs text-foreground/75">Escribe tu nombre y deja un mensaje</p>
         </div>
-        <div className="flex-1 min-h-0 bg-white overflow-hidden">{chatContent}</div>
+        <div className="flex-1 min-h-0 overflow-hidden">{chatPanel}</div>
       </div>
     </>
   );

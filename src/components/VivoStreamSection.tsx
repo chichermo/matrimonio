@@ -33,10 +33,7 @@ export function VivoStreamSection() {
         </div>
 
         <div className="lg:col-span-1 min-w-0 flex flex-col">
-          <StreamChatPanel
-            youtubeVideoId={weddingConfig.youtubeVideoId}
-            isLive={isStreaming}
-          />
+          <StreamChatPanel />
         </div>
       </div>
     </>

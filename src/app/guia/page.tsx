@@ -137,7 +137,29 @@ export default function GuiaPage() {
         </div>
 
         <div className="rounded-xl border border-gold/30 bg-cream p-5">
-          <h2 className="font-semibold text-gold mb-3">5. Compartir con Chile</h2>
+          <h2 className="font-semibold text-gold mb-3">5. Chat de mensajes (tu sitio)</h2>
+          <p className="mb-3">
+            El chat es del sitio web, no de YouTube. La familia escribe su nombre y un mensaje.
+          </p>
+          <ol className="list-decimal list-inside space-y-2">
+            <li>
+              Crea proyecto en <strong>supabase.com</strong> (gratis)
+            </li>
+            <li>
+              SQL Editor → ejecuta el archivo <code>supabase/schema.sql</code>
+            </li>
+            <li>
+              Database → Replication → activa <strong>messages</strong>
+            </li>
+            <li>
+              En Vercel agrega <code>NEXT_PUBLIC_SUPABASE_URL</code> y{" "}
+              <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code>
+            </li>
+          </ol>
+        </div>
+
+        <div className="rounded-xl border border-gold/30 bg-cream p-5">
+          <h2 className="font-semibold text-gold mb-3">6. Compartir con Chile</h2>
           <p className="mb-2">Envía por WhatsApp el enlace de tu sitio:</p>
           <code className="block p-3 rounded-lg bg-white text-xs break-all border border-gold/20">
             https://matrimonio-coral.vercel.app/vivo
@@ -148,7 +170,7 @@ export default function GuiaPage() {
         </div>
 
         <div className="rounded-xl border border-gold/30 bg-cream p-5">
-          <h2 className="font-semibold text-gold mb-3">6. Ver en Smart TV</h2>
+          <h2 className="font-semibold text-gold mb-3">7. Ver en Smart TV</h2>
           <ol className="list-decimal list-inside space-y-2">
             <li>
               <strong>Más fácil:</strong> app YouTube en la TV → abrir la transmisión programada
