@@ -39,6 +39,17 @@ export default function HomePage() {
             Ver transmisión
           </Link>
           <Link
+            href="/fotos"
+            className="touch-target inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full border border-gold/50 text-gold text-sm sm:text-base font-medium hover:bg-gold/10 transition-colors"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="shrink-0">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            Ver álbum de fotos
+          </Link>
+          <Link
             href="/tv"
             className="touch-target inline-flex items-center justify-center px-6 py-3.5 rounded-full border border-gold/50 text-gold text-sm sm:text-base font-medium hover:bg-gold/10 transition-colors"
           >
