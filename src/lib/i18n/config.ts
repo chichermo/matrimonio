@@ -1,4 +1,4 @@
-export const locales = ["es", "en", "fr"] as const;
+export const locales = ["es", "en", "fr", "nl"] as const;
 export type Locale = (typeof locales)[number];
 
 export const defaultLocale: Locale = "es";
@@ -8,6 +8,7 @@ export const localeLabels: Record<Locale, string> = {
   es: "ES",
   en: "EN",
   fr: "FR",
+  nl: "NL",
 };
 
 export function isLocale(value: string | undefined | null): value is Locale {
@@ -35,8 +36,7 @@ export function detectLocale(acceptLanguage: string | null | undefined): Locale 
     if (primary === "es") return "es";
     if (primary === "en") return "en";
     if (primary === "fr") return "fr";
-    // Neerlandés (Bélgica/Países Bajos) → inglés como puente
-    if (primary === "nl") return "en";
+    if (primary === "nl") return "nl";
   }
 
   return defaultLocale;
@@ -45,5 +45,6 @@ export function detectLocale(acceptLanguage: string | null | undefined): Locale 
 export function localeToBcp47(locale: Locale): string {
   if (locale === "es") return "es-CL";
   if (locale === "fr") return "fr-BE";
+  if (locale === "nl") return "nl-BE";
   return "en-GB";
 }

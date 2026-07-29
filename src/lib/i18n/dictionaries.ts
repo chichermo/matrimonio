@@ -415,12 +415,150 @@ const fr: DictShape = {
   },
 };
 
+const nl: DictShape = {
+  home: {
+    marriedIn: "We trouwen in",
+    forFamily: "Livestream voor onze familie in Chili",
+    watchLive: "Live kijken",
+    viewAlbum: "Fotoalbum bekijken",
+    watchOnTv: "Bekijken op Smart TV",
+    guideLink: "Gids om te streamen met YouTube",
+  },
+  countdown: {
+    days: "dagen",
+    hours: "uren",
+    minutes: "min",
+    seconds: "sec",
+    untilCeremony: "Aftellen tot de ceremonie",
+    belgium: "België",
+    chile: "Chili",
+    inChile: "In Chili",
+    grandDay: "Het is de grote dag!",
+    startedAt: "De ceremonie begon om",
+    today: "Vandaag is de dag!",
+  },
+  vivo: {
+    backHome: "← Home",
+    tvVersion: "TV-versie",
+    guide: "Gids",
+  },
+  chat: {
+    titleCouple: "Berichten voor Liesbeth & Guillermo",
+    titleShort: "Berichten voor het paar",
+    wishes: "Laat je beste wensen achter",
+    writeName: "Vul je naam in en laat een bericht achter",
+    availableDuring: "Beschikbaar tijdens de livestream",
+    closed: "De chat is beschikbaar wanneer de livestream begint",
+    firstMessage: "Wees de eerste die een lief bericht stuurt 💕",
+    namePlaceholder: "Jouw naam",
+    messagePlaceholder: "Jouw bericht...",
+    send: "Versturen",
+    needBoth: "Vul je naam en een bericht in",
+    sendError: "Fout bij versturen",
+    sendFailed: "Kon niet versturen. Probeer opnieuw.",
+  },
+  captions: {
+    title: "Ondertitels",
+    intro:
+      "Ondertitels gaan automatisch aan als YouTube ze heeft. Als ze niet verschijnen:",
+    step1Before: "Tik op",
+    step1After: "in de speler",
+    step2: "Instellingen (tandwiel) → Ondertitels",
+    step3: "Automatisch vertalen → kies jouw taal",
+    openYoutube: "Openen op YouTube met ondertitels",
+    hostTip:
+      "Voor live ondertitels: in YouTube Studio → jouw stream → Ondertitels → zet automatische ondertitels aan en kies de taal van de ceremonie. Ze kunnen ~30 s laten verschijnen.",
+  },
+  watchTv: {
+    title: "Bekijken op Smart TV?",
+    subtitle: "Drie eenvoudige manieren om op tv te kijken",
+    opt1Title: "Optie 1 · Het eenvoudigst",
+    opt1Body:
+      "Open de YouTube-app op je tv en zoek de stream, of gebruik deze link:",
+    openYoutube: "Openen op YouTube",
+    notReady: "Beschikbaar zodra de video is ingesteld",
+    opt2Title: "Optie 2 · Chromecast",
+    opt2Body:
+      "Open deze pagina op je telefoon in Chrome en tik op Cast in de YouTube-speler.",
+    opt3Title: "Optie 3 · TV-browser",
+    opt3Body:
+      "Op Samsung, LG of Android TV open je de browser en ga je naar de TV-versie:",
+    openTv: "TV-versie openen",
+    qrHint: "Je kunt ook de QR-code scannen vanaf je telefoon:",
+    scanTitle: "Scan met je telefoon",
+    scanBody:
+      "Open de camera, scan de QR en cast daarna naar je tv met Chromecast of AirPlay.",
+    youtubeDirect: "Directe YouTube-link:",
+  },
+  player: {
+    watchLive: "Live kijken",
+    refreshHint: "Vernieuw deze pagina wanneer de stream begint",
+    autoConnect: "De stream verbindt automatisch op de trouwdag",
+    startedCta: "De stream is begonnen — live kijken",
+  },
+  tv: {
+    liveStream: "Livestream",
+    live: "Live",
+    fallback:
+      "Als de video niet laadt, open dan de YouTube-app op je tv en ga naar:",
+    fullVersion: "Volledige versie met chat",
+  },
+  album: {
+    coverKicker: "Album van onze dag",
+    coverBody:
+      "Een wandeling door de momenten van onze bruiloft. Kies hoe je de foto's wilt zien, of bekijk de video's apart.",
+    enter: "Het album binnenkomen",
+    photosVideos: "{photos} foto's · {videos} video's",
+    backHome: "← Terug naar home",
+    backCover: "← Omslag",
+    backMenu: "← Menu",
+    howToWatch: "Hoe wil je kijken?",
+    chooseExperience: "Kies je ervaring",
+    menuIntro:
+      "Foto's en video's zijn gescheiden zodat je ze op je eigen tempo kunt genieten.",
+    photos: "Foto's",
+    videos: "Video's",
+    gridTitle: "Galerij",
+    gridDesc:
+      "Bekijk alle foto's in een elegant mozaïek. Ideaal om rustig te kijken.",
+    carouselTitle: "Carrousel",
+    carouselDesc:
+      "Eén foto tegelijk, met miniaturen onderaan. Veeg of gebruik de pijltjes.",
+    storyTitle: "Diavoorstelling",
+    storyDesc:
+      "Volledig scherm met automatische doorgang. Perfect om met familie te delen.",
+    viewVideos: "Video's bekijken",
+    videosDesc:
+      "Volledige ceremonie op YouTube en korte clips van de dag, in een aparte sectie.",
+    open: "Openen →",
+    grid: "Galerij",
+    carousel: "Carrousel",
+    story: "Diavoorstelling",
+    swipeHint: "Veeg of gebruik ← →",
+    exit: "Sluiten",
+    pause: "Pauze",
+    play: "Afspelen",
+    storyHint: "Tik op de zijkanten · Spatie pauze · Esc sluiten",
+    clipsKicker: "Clips van de dag",
+    videosCount: "{count} video's · tik er een om af te spelen",
+    ceremonyTitle: "Volledige ceremonie",
+    ceremonySubtitle: "Vanuit de auto tot het einde · Opgenomen livestream",
+    clipTitle: "Clip {n}",
+    clipSubtitle: "Een moment van de dag",
+  },
+  lang: {
+    label: "Taal",
+    auto: "Volgens je apparaat",
+  },
+};
+
 export type Dictionary = DictShape;
 
 export const dictionaries: Record<Locale, Dictionary> = {
   es: es as DictShape,
   en,
   fr,
+  nl,
 };
 
 export function t(
