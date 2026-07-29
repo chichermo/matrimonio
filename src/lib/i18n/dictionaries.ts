@@ -97,6 +97,9 @@ const es = {
     backHome: "← Volver al inicio",
     backCover: "← Portada",
     backMenu: "← Menú",
+    navBack: "Volver",
+    navHome: "Inicio",
+    navMenu: "Menú",
     howToWatch: "¿Cómo quieres mirar?",
     chooseExperience: "Elige tu experiencia",
     menuIntro:
@@ -239,6 +242,9 @@ const en: DictShape = {
     backHome: "← Back home",
     backCover: "← Cover",
     backMenu: "← Menu",
+    navBack: "Back",
+    navHome: "Home",
+    navMenu: "Menu",
     howToWatch: "How do you want to watch?",
     chooseExperience: "Choose your experience",
     menuIntro:
@@ -375,6 +381,9 @@ const fr: DictShape = {
     backHome: "← Retour à l'accueil",
     backCover: "← Couverture",
     backMenu: "← Menu",
+    navBack: "Retour",
+    navHome: "Accueil",
+    navMenu: "Menu",
     howToWatch: "Comment voulez-vous regarder ?",
     chooseExperience: "Choisissez votre expérience",
     menuIntro:
@@ -512,6 +521,9 @@ const nl: DictShape = {
     backHome: "← Terug naar home",
     backCover: "← Omslag",
     backMenu: "← Menu",
+    navBack: "Terug",
+    navHome: "Home",
+    navMenu: "Menu",
     howToWatch: "Hoe wil je kijken?",
     chooseExperience: "Kies je ervaring",
     menuIntro:

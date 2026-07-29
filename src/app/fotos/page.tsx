@@ -30,6 +30,40 @@ type ViewMode = "grid" | "carousel" | "story";
 const SLIDE_MS = 4500;
 const COVER_PHOTO = PHOTOS[Math.min(40, PHOTOS.length - 1)]?.src ?? PHOTOS[0]?.src;
 
+function AlbumNavBar({
+  onBack,
+  backLabel,
+  className = "",
+}: {
+  onBack: () => void;
+  backLabel: string;
+  className?: string;
+}) {
+  const { dict } = useI18n();
+
+  return (
+    <nav
+      className={`flex items-center justify-between gap-3 ${className}`}
+      aria-label="Navegación del álbum"
+    >
+      <button
+        type="button"
+        onClick={onBack}
+        className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[#c9a962]/50 bg-[#c9a962]/10 px-4 py-2.5 text-sm font-medium text-[#c9a962] transition hover:border-[#c9a962] hover:bg-[#c9a962]/20 hover:text-[#f0e6d3]"
+      >
+        <span aria-hidden>←</span>
+        {backLabel}
+      </button>
+      <Link
+        href="/"
+        className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-2.5 text-sm font-medium text-[#f0e6d3]/90 transition hover:border-white/40 hover:bg-white/10"
+      >
+        {dict.album.navHome}
+      </Link>
+    </nav>
+  );
+}
+
 export default function FotosPage() {
   const [screen, setScreen] = useState<Screen>("cover");
   const [mode, setMode] = useState<ViewMode>("grid");
@@ -208,7 +242,7 @@ function CoverScreen({ onEnter }: { onEnter: () => void }) {
 
         <Link
           href="/"
-          className="mt-6 inline-block text-xs tracking-widest text-[#c9a962]/80 uppercase transition hover:text-[#f0e6d3]"
+          className="mt-8 inline-flex min-h-11 items-center gap-2 rounded-full border border-white/25 px-5 py-2.5 text-sm text-[#f0e6d3]/90 transition hover:border-white/50 hover:bg-white/10"
         >
           {dict.album.backHome}
         </Link>
@@ -271,15 +305,14 @@ function MenuScreen({
   ];
 
   return (
-    <section className="mx-auto flex min-h-screen max-w-5xl flex-col px-4 py-10 sm:px-6 sm:py-14">
+    <section className="mx-auto flex min-h-screen max-w-5xl flex-col px-4 py-6 sm:px-6 sm:py-10">
+      <AlbumNavBar
+        onBack={onBack}
+        backLabel={dict.album.navBack}
+        className="mb-8 sm:mb-10"
+      />
+
       <div className="mb-10 text-center sm:mb-14">
-        <button
-          type="button"
-          onClick={onBack}
-          className="mb-6 text-xs tracking-widest text-[#c9a962] uppercase transition hover:text-[#f0e6d3]"
-        >
-          {dict.album.backCover}
-        </button>
         <p className="mb-3 text-xs tracking-[0.35em] text-[#c9a962] uppercase">
           {dict.album.howToWatch}
         </p>
@@ -373,18 +406,12 @@ function PhotosHeader({
   ];
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/5 bg-[#0a0a0a]/85 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-        <button
-          type="button"
-          onClick={onBack}
-          className="self-start text-xs tracking-widest text-[#c9a962] uppercase transition hover:text-[#f0e6d3]"
-        >
-          {dict.album.backMenu}
-        </button>
+    <header className="sticky top-0 z-40 border-b border-white/5 bg-[#0a0a0a]/90 backdrop-blur-md">
+      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:px-6">
+        <AlbumNavBar onBack={onBack} backLabel={dict.album.navMenu} />
 
         <div
-          className="flex w-full rounded-full border border-white/10 bg-white/5 p-1 sm:w-auto"
+          className="flex w-full rounded-full border border-white/10 bg-white/5 p-1 sm:mx-auto sm:w-auto"
           role="tablist"
         >
           {options.map((opt) => {
@@ -406,10 +433,6 @@ function PhotosHeader({
             );
           })}
         </div>
-
-        <p className="hidden text-sm text-[#a89070] sm:block">
-          {PHOTO_COUNT} {dict.album.photos.toLowerCase()}
-        </p>
       </div>
     </header>
   );
@@ -727,24 +750,32 @@ function StoryView({
         </div>
       </div>
 
-      <div className="absolute top-6 right-0 left-0 z-20 flex items-center justify-between px-4 pt-4 sm:px-8">
+      <div className="absolute top-6 right-0 left-0 z-20 flex items-center justify-between gap-2 px-4 pt-4 sm:px-8">
         <button
           type="button"
           onClick={onExit}
-          className="rounded-full border border-white/15 bg-black/40 px-4 py-2 text-xs tracking-widest text-white/80 uppercase backdrop-blur transition hover:bg-black/60"
+          className="rounded-full border border-white/20 bg-black/50 px-4 py-2.5 text-sm font-medium text-white/90 backdrop-blur transition hover:bg-black/70"
         >
-          {dict.album.exit}
+          ← {dict.album.navMenu}
         </button>
         <p className="text-sm text-white/60">
           {index + 1} / {PHOTOS.length}
         </p>
-        <button
-          type="button"
-          onClick={() => setPlaying(!playing)}
-          className="rounded-full border border-white/15 bg-black/40 px-4 py-2 text-xs tracking-widest text-white/80 uppercase backdrop-blur transition hover:bg-black/60"
-        >
-          {playing ? dict.album.pause : dict.album.play}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setPlaying(!playing)}
+            className="rounded-full border border-white/20 bg-black/50 px-4 py-2.5 text-sm font-medium text-white/90 backdrop-blur transition hover:bg-black/70"
+          >
+            {playing ? dict.album.pause : dict.album.play}
+          </button>
+          <Link
+            href="/"
+            className="rounded-full border border-[#c9a962]/50 bg-[#c9a962]/15 px-4 py-2.5 text-sm font-medium text-[#c9a962] backdrop-blur transition hover:bg-[#c9a962]/25"
+          >
+            {dict.album.navHome}
+          </Link>
+        </div>
       </div>
 
       <button
@@ -886,15 +917,14 @@ function VideosScreen({
   }, [activeIndex, setActiveIndex]);
 
   return (
-    <section className="mx-auto min-h-screen max-w-6xl px-4 py-10 sm:px-6">
+    <section className="mx-auto min-h-screen max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
+      <AlbumNavBar
+        onBack={onBack}
+        backLabel={dict.album.navMenu}
+        className="mb-8"
+      />
+
       <div className="mb-10 text-center">
-        <button
-          type="button"
-          onClick={onBack}
-          className="mb-6 text-xs tracking-widest text-[#c9a962] uppercase transition hover:text-[#f0e6d3]"
-        >
-          {dict.album.backMenu}
-        </button>
         <p className="mb-3 text-xs tracking-[0.35em] text-[#c9a962] uppercase">
           {dict.album.clipsKicker}
         </p>
