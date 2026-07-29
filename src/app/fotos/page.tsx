@@ -12,11 +12,13 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   PHOTOS,
-  VIDEOS,
+  ALBUM_VIDEOS,
   PHOTO_COUNT,
   VIDEO_COUNT,
+  youtubeThumb,
+  youtubeEmbedUrl,
   type PhotoItem,
-  type VideoItem,
+  type AlbumVideo,
 } from "@/lib/album-media";
 import { weddingConfig } from "@/lib/config";
 
@@ -336,8 +338,8 @@ function MenuScreen({
                 Ver videos
               </p>
               <p className="max-w-md text-sm leading-relaxed text-[#a89070]">
-                Clips del día en su propia sección, con reproducción a pantalla
-                completa.
+                Ceremonia completa en YouTube y clips cortos del día, en su
+                propia sección.
               </p>
             </div>
           </div>
@@ -846,18 +848,18 @@ function VideosScreen({
   activeIndex: number | null;
   setActiveIndex: (i: number | null) => void;
 }) {
-  const active = activeIndex !== null ? VIDEOS[activeIndex] : null;
+  const active = activeIndex !== null ? ALBUM_VIDEOS[activeIndex] : null;
 
   useEffect(() => {
     if (activeIndex === null) return;
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setActiveIndex(null);
       if (e.key === "ArrowRight") {
-        setActiveIndex(((activeIndex ?? 0) + 1) % VIDEOS.length);
+        setActiveIndex(((activeIndex ?? 0) + 1) % ALBUM_VIDEOS.length);
       }
       if (e.key === "ArrowLeft") {
         setActiveIndex(
-          ((activeIndex ?? 0) - 1 + VIDEOS.length) % VIDEOS.length
+          ((activeIndex ?? 0) - 1 + ALBUM_VIDEOS.length) % ALBUM_VIDEOS.length
         );
       }
     };
@@ -889,33 +891,14 @@ function VideosScreen({
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
-        {VIDEOS.map((video, index) => (
-          <button
-            key={video.src}
-            type="button"
+      <div className="grid gap-4 sm:grid-cols-2">
+        {ALBUM_VIDEOS.map((video, index) => (
+          <VideoCard
+            key={video.id}
+            video={video}
+            featured={index === 0 && video.kind === "youtube"}
             onClick={() => setActiveIndex(index)}
-            className="group relative aspect-video overflow-hidden rounded-xl border border-white/10 text-left transition hover:border-[#c9a962]/50"
-          >
-            <Image
-              src={`/fotos/${video.poster}`}
-              alt={`Video ${index + 1}`}
-              fill
-              className="object-cover transition duration-700 group-hover:scale-105"
-              sizes="(max-width: 640px) 100vw, 50vw"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 shadow-lg transition group-hover:scale-110">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="#0a0a0a">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-              </div>
-            </div>
-            <p className="absolute bottom-3 left-4 text-sm tracking-wide text-white/90">
-              Video {index + 1}
-            </p>
-          </button>
+          />
         ))}
       </div>
 
@@ -931,15 +914,15 @@ function VideosScreen({
           >
             ×
           </button>
-          <div className="absolute top-5 left-1/2 -translate-x-1/2 text-sm tracking-widest text-white/50">
-            Video {activeIndex + 1} / {VIDEOS.length}
+          <div className="absolute top-5 left-1/2 max-w-[70%] -translate-x-1/2 truncate text-center text-sm tracking-wide text-white/50">
+            {active.title} · {activeIndex + 1} / {ALBUM_VIDEOS.length}
           </div>
           <button
             className="absolute left-3 z-10 text-5xl text-white/60 hover:text-white sm:left-6"
             onClick={(e) => {
               e.stopPropagation();
               setActiveIndex(
-                (activeIndex - 1 + VIDEOS.length) % VIDEOS.length
+                (activeIndex - 1 + ALBUM_VIDEOS.length) % ALBUM_VIDEOS.length
               );
             }}
             aria-label="Anterior"
@@ -947,24 +930,37 @@ function VideosScreen({
             ‹
           </button>
           <div
-            className="relative flex h-full w-full items-center justify-center px-14 py-16"
+            className="relative flex h-full w-full items-center justify-center px-4 py-16 sm:px-14"
             onClick={(e) => e.stopPropagation()}
           >
-            <video
-              key={active.src}
-              src={`/fotos/${active.src}`}
-              poster={`/fotos/${active.poster}`}
-              controls
-              autoPlay
-              playsInline
-              className="max-h-full max-w-full object-contain"
-            />
+            {active.kind === "youtube" ? (
+              <div className="aspect-video w-full max-w-5xl overflow-hidden rounded-lg shadow-2xl">
+                <iframe
+                  key={active.youtubeId}
+                  src={youtubeEmbedUrl(active.youtubeId)}
+                  title={active.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  className="h-full w-full border-0"
+                />
+              </div>
+            ) : (
+              <video
+                key={active.src}
+                src={`/fotos/${active.src}`}
+                poster={`/fotos/${active.poster}`}
+                controls
+                autoPlay
+                playsInline
+                className="max-h-full max-w-full object-contain"
+              />
+            )}
           </div>
           <button
             className="absolute right-3 z-10 text-5xl text-white/60 hover:text-white sm:right-6"
             onClick={(e) => {
               e.stopPropagation();
-              setActiveIndex((activeIndex + 1) % VIDEOS.length);
+              setActiveIndex((activeIndex + 1) % ALBUM_VIDEOS.length);
             }}
             aria-label="Siguiente"
           >
@@ -973,5 +969,62 @@ function VideosScreen({
         </div>
       )}
     </section>
+  );
+}
+
+function VideoCard({
+  video,
+  featured,
+  onClick,
+}: {
+  video: AlbumVideo;
+  featured?: boolean;
+  onClick: () => void;
+}) {
+  const thumb =
+    video.kind === "youtube"
+      ? youtubeThumb(video.youtubeId)
+      : `/fotos/${video.poster}`;
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`group relative aspect-video overflow-hidden rounded-xl border border-white/10 text-left transition hover:border-[#c9a962]/50 ${
+        featured ? "sm:col-span-2" : ""
+      }`}
+    >
+      <Image
+        src={thumb}
+        alt={video.title}
+        fill
+        className="object-cover transition duration-700 group-hover:scale-105"
+        sizes={featured ? "100vw" : "(max-width: 640px) 100vw, 50vw"}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 shadow-lg transition group-hover:scale-110">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#0a0a0a">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </div>
+      </div>
+      <div className="absolute right-0 bottom-0 left-0 p-4">
+        {video.kind === "youtube" && (
+          <span className="mb-2 inline-block rounded-full bg-[#c9a962]/90 px-2.5 py-0.5 text-[10px] tracking-widest text-[#0a0a0a] uppercase">
+            YouTube
+          </span>
+        )}
+        <p
+          className="text-lg tracking-wide text-white sm:text-xl"
+          style={{ fontFamily: "var(--font-cormorant)" }}
+        >
+          {video.title}
+        </p>
+        {video.subtitle && (
+          <p className="mt-0.5 text-sm text-white/65">{video.subtitle}</p>
+        )}
+      </div>
+    </button>
   );
 }

@@ -162,7 +162,6 @@ export const MEDIA: MediaItem[] = [
   },
 ];
 export const PHOTO_COUNT = MEDIA.filter((m) => m.type === "photo").length;
-export const VIDEO_COUNT = MEDIA.filter((m) => m.type === "video").length;
 
 export type PhotoItem = Extract<MediaItem, { type: "photo" }>;
 export type VideoItem = Extract<MediaItem, { type: "video" }>;
@@ -170,10 +169,60 @@ export type VideoItem = Extract<MediaItem, { type: "video" }>;
 export const PHOTOS: PhotoItem[] = MEDIA.filter(
   (m): m is PhotoItem => m.type === "photo"
 );
-export const VIDEOS: VideoItem[] = MEDIA.filter(
+
+/** Videos locales convertidos desde el teléfono */
+const LOCAL_VIDEOS: VideoItem[] = MEDIA.filter(
   (m): m is VideoItem => m.type === "video"
 );
 
+export type AlbumVideo =
+  | {
+      kind: "youtube";
+      id: string;
+      youtubeId: string;
+      title: string;
+      subtitle?: string;
+    }
+  | {
+      kind: "file";
+      id: string;
+      src: string;
+      poster: string;
+      title: string;
+      subtitle?: string;
+    };
+
+/** Sección de videos del álbum (YouTube + clips locales) */
+export const ALBUM_VIDEOS: AlbumVideo[] = [
+  {
+    kind: "youtube",
+    id: "ceremony-live",
+    youtubeId: "izGrNpQGnhQ",
+    title: "Ceremonia completa",
+    subtitle: "Desde el auto hasta el final · Transmisión grabada",
+  },
+  ...LOCAL_VIDEOS.map((v, i) => ({
+    kind: "file" as const,
+    id: v.src,
+    src: v.src,
+    poster: v.poster,
+    title: `Clip ${i + 1}`,
+    subtitle: "Momento del día",
+  })),
+];
+
+export const VIDEO_COUNT = ALBUM_VIDEOS.length;
+
+export const VIDEOS = LOCAL_VIDEOS;
+
 export function mediaThumb(item: MediaItem): string {
   return item.type === "video" ? item.poster : item.src;
+}
+
+export function youtubeThumb(youtubeId: string) {
+  return `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`;
+}
+
+export function youtubeEmbedUrl(youtubeId: string) {
+  return `https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1`;
 }
