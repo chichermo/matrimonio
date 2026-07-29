@@ -11,24 +11,30 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import {
-  MEDIA,
+  PHOTOS,
+  VIDEOS,
   PHOTO_COUNT,
   VIDEO_COUNT,
-  mediaThumb,
-  type MediaItem,
+  type PhotoItem,
+  type VideoItem,
 } from "@/lib/album-media";
+import { weddingConfig } from "@/lib/config";
 
+type Screen = "cover" | "menu" | "photos" | "videos";
 type ViewMode = "grid" | "carousel" | "story";
 
 const SLIDE_MS = 4500;
+const COVER_PHOTO = PHOTOS[Math.min(40, PHOTOS.length - 1)]?.src ?? PHOTOS[0]?.src;
 
 export default function FotosPage() {
+  const [screen, setScreen] = useState<Screen>("cover");
   const [mode, setMode] = useState<ViewMode>("grid");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [storyIndex, setStoryIndex] = useState(0);
   const [storyPlaying, setStoryPlaying] = useState(true);
   const [storyProgress, setStoryProgress] = useState(0);
+  const [videoLightbox, setVideoLightbox] = useState<number | null>(null);
 
   const openLightbox = useCallback((index: number) => {
     setLightboxIndex(index);
@@ -37,12 +43,12 @@ export default function FotosPage() {
 
   const closeLightbox = useCallback(() => {
     setLightboxIndex(null);
-    document.body.style.overflow = "";
-  }, []);
+    if (videoLightbox === null) document.body.style.overflow = "";
+  }, [videoLightbox]);
 
   const goLightbox = useCallback((delta: number) => {
     setLightboxIndex((i) =>
-      i === null ? null : (i + delta + MEDIA.length) % MEDIA.length
+      i === null ? null : (i + delta + PHOTOS.length) % PHOTOS.length
     );
   }, []);
 
@@ -58,115 +64,172 @@ export default function FotosPage() {
   }, [lightboxIndex, closeLightbox, goLightbox]);
 
   useEffect(() => {
-    if (mode !== "story") return;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [mode]);
-
-  const switchMode = (next: ViewMode) => {
-    setMode(next);
-    if (next === "carousel") setCarouselIndex(0);
-    if (next === "story") {
-      setStoryIndex(0);
-      setStoryPlaying(true);
-      setStoryProgress(0);
+    if (mode === "story" && screen === "photos") {
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = "";
+      };
     }
+  }, [mode, screen]);
+
+  const enterPhotos = (nextMode: ViewMode) => {
+    setMode(nextMode);
+    setCarouselIndex(0);
+    setStoryIndex(0);
+    setStoryPlaying(true);
+    setStoryProgress(0);
+    setScreen("photos");
   };
 
   return (
     <main className="min-h-screen bg-[#0a0a0a] text-[#f0e6d3]">
-      {mode !== "story" && (
-        <header className="sticky top-0 z-40 border-b border-white/5 bg-[#0a0a0a]/85 backdrop-blur-md">
-          <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-            <div className="flex items-center justify-between gap-4 sm:justify-start">
-              <div>
-                <p className="text-[11px] tracking-[0.3em] text-[#c9a962] uppercase">
-                  10 · VII · MMXXVI
-                </p>
-                <h1
-                  className="text-2xl font-light tracking-wide sm:text-3xl"
-                  style={{ fontFamily: "var(--font-cormorant)" }}
-                >
-                  Álbum
-                </h1>
-              </div>
-              <Link
-                href="/"
-                className="text-xs tracking-widest text-[#c9a962]/80 uppercase transition-colors hover:text-[#f0e6d3] sm:hidden"
-              >
-                Inicio
-              </Link>
-            </div>
-
-            <ViewModeSwitcher mode={mode} onChange={switchMode} />
-
-            <div className="hidden items-center gap-4 sm:flex">
-              <p className="text-sm text-[#a89070]">
-                {PHOTO_COUNT} fotos · {VIDEO_COUNT} videos
-              </p>
-              <Link
-                href="/"
-                className="text-xs tracking-widest text-[#c9a962] uppercase transition-colors hover:text-[#f0e6d3]"
-              >
-                ← Inicio
-              </Link>
-            </div>
-          </div>
-        </header>
+      {screen === "cover" && (
+        <CoverScreen onEnter={() => setScreen("menu")} />
       )}
 
-      {mode === "grid" && (
-        <GridView onOpen={openLightbox} />
-      )}
-
-      {mode === "carousel" && (
-        <CarouselView
-          index={carouselIndex}
-          setIndex={setCarouselIndex}
-          onOpenFullscreen={openLightbox}
+      {screen === "menu" && (
+        <MenuScreen
+          onSelectPhotosMode={enterPhotos}
+          onSelectVideos={() => setScreen("videos")}
+          onBack={() => setScreen("cover")}
         />
       )}
 
-      {mode === "story" && (
-        <StoryView
-          index={storyIndex}
-          setIndex={setStoryIndex}
-          playing={storyPlaying}
-          setPlaying={setStoryPlaying}
-          progress={storyProgress}
-          setProgress={setStoryProgress}
-          onExit={() => switchMode("grid")}
-          onOpenModes={() => switchMode("carousel")}
-        />
+      {screen === "photos" && (
+        <>
+          {mode !== "story" && (
+            <PhotosHeader
+              mode={mode}
+              onChangeMode={enterPhotos}
+              onBack={() => setScreen("menu")}
+            />
+          )}
+          {mode === "grid" && <GridView onOpen={openLightbox} />}
+          {mode === "carousel" && (
+            <CarouselView
+              index={carouselIndex}
+              setIndex={setCarouselIndex}
+              onOpenFullscreen={openLightbox}
+            />
+          )}
+          {mode === "story" && (
+            <StoryView
+              index={storyIndex}
+              setIndex={setStoryIndex}
+              playing={storyPlaying}
+              setPlaying={setStoryPlaying}
+              progress={storyProgress}
+              setProgress={setStoryProgress}
+              onExit={() => setScreen("menu")}
+            />
+          )}
+          {lightboxIndex !== null && (
+            <PhotoLightbox
+              index={lightboxIndex}
+              onClose={closeLightbox}
+              onPrev={() => goLightbox(-1)}
+              onNext={() => goLightbox(1)}
+            />
+          )}
+        </>
       )}
 
-      {lightboxIndex !== null && (
-        <Lightbox
-          index={lightboxIndex}
-          onClose={closeLightbox}
-          onPrev={() => goLightbox(-1)}
-          onNext={() => goLightbox(1)}
+      {screen === "videos" && (
+        <VideosScreen
+          onBack={() => setScreen("menu")}
+          activeIndex={videoLightbox}
+          setActiveIndex={(i) => {
+            setVideoLightbox(i);
+            document.body.style.overflow = i === null ? "" : "hidden";
+          }}
         />
       )}
     </main>
   );
 }
 
-function ViewModeSwitcher({
-  mode,
-  onChange,
+function CoverScreen({ onEnter }: { onEnter: () => void }) {
+  return (
+    <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 text-center">
+      {COVER_PHOTO && (
+        <Image
+          src={`/fotos/${COVER_PHOTO}`}
+          alt=""
+          fill
+          priority
+          className="object-cover opacity-40 album-kenburns-zoom-slow"
+          sizes="100vw"
+        />
+      )}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/55 to-[#0a0a0a]" />
+
+      <div className="relative z-10 max-w-2xl animate-[fade-in-up_0.8s_ease-out]">
+        <p className="mb-5 text-xs tracking-[0.4em] text-[#c9a962] uppercase sm:text-sm">
+          10 · VII · MMXXVI · {weddingConfig.location}
+        </p>
+        <h1
+          className="mb-4 text-5xl font-light tracking-wide sm:text-7xl"
+          style={{ fontFamily: "var(--font-playfair)" }}
+        >
+          {weddingConfig.coupleNames}
+        </h1>
+        <div className="mx-auto mb-6 h-px w-20 bg-[#c9a962]" />
+        <p
+          className="mb-3 text-2xl font-light tracking-wide text-[#f0e6d3] sm:text-3xl"
+          style={{ fontFamily: "var(--font-cormorant)" }}
+        >
+          Álbum de nuestro día
+        </p>
+        <p className="mx-auto mb-10 max-w-md text-base leading-relaxed text-[#a89070] sm:text-lg">
+          Un recorrido por los momentos de nuestra boda. Elige cómo quieres
+          ver las fotos, o mira los videos por separado.
+        </p>
+
+        <button
+          type="button"
+          onClick={onEnter}
+          className="inline-flex items-center gap-3 rounded-full bg-[#c9a962] px-8 py-4 text-sm tracking-[0.2em] text-[#0a0a0a] uppercase transition hover:bg-[#d4b978] active:scale-[0.98]"
+        >
+          Entrar al álbum
+          <span aria-hidden>→</span>
+        </button>
+
+        <p className="mt-8 text-sm text-[#a89070]/80">
+          {PHOTO_COUNT} fotografías · {VIDEO_COUNT} videos
+        </p>
+
+        <Link
+          href="/"
+          className="mt-6 inline-block text-xs tracking-widest text-[#c9a962]/80 uppercase transition hover:text-[#f0e6d3]"
+        >
+          ← Volver al inicio
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+function MenuScreen({
+  onSelectPhotosMode,
+  onSelectVideos,
+  onBack,
 }: {
-  mode: ViewMode;
-  onChange: (m: ViewMode) => void;
+  onSelectPhotosMode: (mode: ViewMode) => void;
+  onSelectVideos: () => void;
+  onBack: () => void;
 }) {
-  const options: { id: ViewMode; label: string; icon: ReactNode }[] = [
+  const photoModes: {
+    id: ViewMode;
+    title: string;
+    desc: string;
+    icon: ReactNode;
+  }[] = [
     {
       id: "grid",
-      label: "Galería",
+      title: "Galería",
+      desc: "Explora todas las fotos en un mural elegante. Ideal para mirar con calma.",
       icon: (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
           <rect x="3" y="3" width="8" height="8" rx="1" />
           <rect x="13" y="3" width="8" height="8" rx="1" />
           <rect x="3" y="13" width="8" height="8" rx="1" />
@@ -176,9 +239,10 @@ function ViewModeSwitcher({
     },
     {
       id: "carousel",
-      label: "Carrusel",
+      title: "Carrusel",
+      desc: "Una foto a la vez, con miniaturas abajo. Desliza o usa las flechas.",
       icon: (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
           <rect x="2" y="6" width="20" height="12" rx="2" />
           <path d="M6 6V4M18 6V4M6 20v-2M18 20v-2" />
         </svg>
@@ -186,9 +250,10 @@ function ViewModeSwitcher({
     },
     {
       id: "story",
-      label: "Presentación",
+      title: "Presentación",
+      desc: "Pantalla completa con avance automático. Perfecta para compartir en familia.",
       icon: (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
           <path d="M8 5v14l11-7z" />
         </svg>
       ),
@@ -196,31 +261,150 @@ function ViewModeSwitcher({
   ];
 
   return (
-    <div
-      className="flex w-full rounded-full border border-white/10 bg-white/5 p-1 sm:w-auto"
-      role="tablist"
-      aria-label="Modo de visualización"
-    >
-      {options.map((opt) => {
-        const active = mode === opt.id;
-        return (
-          <button
-            key={opt.id}
-            role="tab"
-            aria-selected={active}
-            onClick={() => onChange(opt.id)}
-            className={`flex flex-1 items-center justify-center gap-2 rounded-full px-3 py-2.5 text-xs tracking-wide transition-all duration-300 sm:flex-none sm:px-4 ${
-              active
-                ? "bg-[#c9a962] text-[#0a0a0a] shadow-lg shadow-[#c9a962]/20"
-                : "text-[#a89070] hover:text-[#f0e6d3]"
-            }`}
-          >
-            {opt.icon}
-            <span>{opt.label}</span>
-          </button>
-        );
-      })}
-    </div>
+    <section className="mx-auto flex min-h-screen max-w-5xl flex-col px-4 py-10 sm:px-6 sm:py-14">
+      <div className="mb-10 text-center sm:mb-14">
+        <button
+          type="button"
+          onClick={onBack}
+          className="mb-6 text-xs tracking-widest text-[#c9a962] uppercase transition hover:text-[#f0e6d3]"
+        >
+          ← Portada
+        </button>
+        <p className="mb-3 text-xs tracking-[0.35em] text-[#c9a962] uppercase">
+          ¿Cómo quieres mirar?
+        </p>
+        <h2
+          className="mb-3 text-4xl font-light tracking-wide sm:text-5xl"
+          style={{ fontFamily: "var(--font-cormorant)" }}
+        >
+          Elige tu experiencia
+        </h2>
+        <p className="mx-auto max-w-lg text-[#a89070]">
+          Las fotos y los videos están separados para que puedas disfrutarlos
+          a tu ritmo.
+        </p>
+      </div>
+
+      <div className="mb-4">
+        <h3 className="mb-4 text-center text-xs tracking-[0.3em] text-[#c9a962]/90 uppercase">
+          Fotos · {PHOTO_COUNT}
+        </h3>
+        <div className="grid gap-3 sm:grid-cols-3 sm:gap-4">
+          {photoModes.map((opt, i) => (
+            <button
+              key={opt.id}
+              type="button"
+              onClick={() => onSelectPhotosMode(opt.id)}
+              className="group album-reveal is-visible rounded-2xl border border-white/10 bg-white/[0.03] p-6 text-left transition duration-300 hover:border-[#c9a962]/50 hover:bg-[#c9a962]/10"
+              style={{ transitionDelay: `${i * 80}ms` }}
+            >
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-[#c9a962]/40 text-[#c9a962] transition group-hover:bg-[#c9a962] group-hover:text-[#0a0a0a]">
+                {opt.icon}
+              </div>
+              <p
+                className="mb-2 text-2xl font-light tracking-wide"
+                style={{ fontFamily: "var(--font-cormorant)" }}
+              >
+                {opt.title}
+              </p>
+              <p className="text-sm leading-relaxed text-[#a89070]">{opt.desc}</p>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-10 sm:mt-14">
+        <h3 className="mb-4 text-center text-xs tracking-[0.3em] text-[#c9a962]/90 uppercase">
+          Videos · {VIDEO_COUNT}
+        </h3>
+        <button
+          type="button"
+          onClick={onSelectVideos}
+          className="group flex w-full flex-col items-start gap-4 rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.05] to-transparent p-6 text-left transition hover:border-[#c9a962]/50 hover:from-[#c9a962]/15 sm:flex-row sm:items-center sm:justify-between sm:p-8"
+        >
+          <div className="flex items-start gap-4 sm:items-center">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-[#c9a962]/40 text-[#c9a962] transition group-hover:bg-[#c9a962] group-hover:text-[#0a0a0a]">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </div>
+            <div>
+              <p
+                className="mb-1 text-2xl font-light tracking-wide sm:text-3xl"
+                style={{ fontFamily: "var(--font-cormorant)" }}
+              >
+                Ver videos
+              </p>
+              <p className="max-w-md text-sm leading-relaxed text-[#a89070]">
+                Clips del día en su propia sección, con reproducción a pantalla
+                completa.
+              </p>
+            </div>
+          </div>
+          <span className="text-sm tracking-widest text-[#c9a962] uppercase transition group-hover:translate-x-1">
+            Abrir →
+          </span>
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function PhotosHeader({
+  mode,
+  onChangeMode,
+  onBack,
+}: {
+  mode: ViewMode;
+  onChangeMode: (m: ViewMode) => void;
+  onBack: () => void;
+}) {
+  const options: { id: ViewMode; label: string }[] = [
+    { id: "grid", label: "Galería" },
+    { id: "carousel", label: "Carrusel" },
+    { id: "story", label: "Presentación" },
+  ];
+
+  return (
+    <header className="sticky top-0 z-40 border-b border-white/5 bg-[#0a0a0a]/85 backdrop-blur-md">
+      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <button
+          type="button"
+          onClick={onBack}
+          className="self-start text-xs tracking-widest text-[#c9a962] uppercase transition hover:text-[#f0e6d3]"
+        >
+          ← Menú
+        </button>
+
+        <div
+          className="flex w-full rounded-full border border-white/10 bg-white/5 p-1 sm:w-auto"
+          role="tablist"
+        >
+          {options.map((opt) => {
+            const active = mode === opt.id;
+            return (
+              <button
+                key={opt.id}
+                role="tab"
+                aria-selected={active}
+                onClick={() => onChangeMode(opt.id)}
+                className={`flex-1 rounded-full px-3 py-2.5 text-xs tracking-wide transition-all sm:flex-none sm:px-4 ${
+                  active
+                    ? "bg-[#c9a962] text-[#0a0a0a]"
+                    : "text-[#a89070] hover:text-[#f0e6d3]"
+                }`}
+              >
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <p className="hidden text-sm text-[#a89070] sm:block">
+          {PHOTO_COUNT} fotos
+        </p>
+      </div>
+    </header>
   );
 }
 
@@ -228,7 +412,7 @@ function GridView({ onOpen }: { onOpen: (i: number) => void }) {
   return (
     <section className="mx-auto max-w-7xl px-2 pb-24 pt-6 sm:px-4">
       <div className="columns-2 gap-2 sm:columns-3 sm:gap-3 lg:columns-4">
-        {MEDIA.map((item, index) => (
+        {PHOTOS.map((item, index) => (
           <GridItem key={item.src} item={item} index={index} onOpen={onOpen} />
         ))}
       </div>
@@ -241,7 +425,7 @@ function GridItem({
   index,
   onOpen,
 }: {
-  item: MediaItem;
+  item: PhotoItem;
   index: number;
   onOpen: (i: number) => void;
 }) {
@@ -278,31 +462,21 @@ function GridItem({
         onClick={() => onOpen(index)}
       >
         <Image
-          src={`/fotos/${mediaThumb(item)}`}
-          alt={item.type === "video" ? `Video ${index + 1}` : `Foto ${index + 1}`}
+          src={`/fotos/${item.src}`}
+          alt={`Foto ${index + 1}`}
           width={600}
           height={800}
           className="h-auto w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-        {item.type === "video" ? (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 shadow-lg transition-transform duration-300 group-hover:scale-110">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="#0a0a0a">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            </div>
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/70">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+              <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+            </svg>
           </div>
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/70">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-              </svg>
-            </div>
-          </div>
-        )}
+        </div>
       </button>
     </div>
   );
@@ -319,11 +493,11 @@ function CarouselView({
 }) {
   const touchX = useRef<number | null>(null);
   const filmRef = useRef<HTMLDivElement>(null);
-  const item = MEDIA[index];
+  const item = PHOTOS[index];
 
   const go = useCallback(
     (delta: number) => {
-      setIndex((i) => (i + delta + MEDIA.length) % MEDIA.length);
+      setIndex((i) => (i + delta + PHOTOS.length) % PHOTOS.length);
     },
     [setIndex]
   );
@@ -342,6 +516,8 @@ function CarouselView({
     const el = filmRef.current?.querySelector(`[data-thumb="${index}"]`);
     el?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
   }, [index]);
+
+  if (!item) return null;
 
   return (
     <section className="flex min-h-[calc(100vh-5.5rem)] flex-col">
@@ -370,30 +546,20 @@ function CarouselView({
           key={item.src}
           className="album-slide relative mx-auto flex h-[min(68vh,720px)] w-full max-w-5xl items-center justify-center"
         >
-          {item.type === "video" ? (
-            <video
+          <button
+            type="button"
+            className="relative h-full w-full"
+            onClick={() => onOpenFullscreen(index)}
+          >
+            <Image
               src={`/fotos/${item.src}`}
-              poster={`/fotos/${item.poster}`}
-              controls
-              playsInline
-              className="max-h-full max-w-full rounded-sm object-contain shadow-2xl shadow-black/50"
+              alt={`Foto ${index + 1}`}
+              fill
+              className="object-contain"
+              sizes="100vw"
+              priority
             />
-          ) : (
-            <button
-              type="button"
-              className="relative h-full w-full"
-              onClick={() => onOpenFullscreen(index)}
-            >
-              <Image
-                src={`/fotos/${item.src}`}
-                alt={`Foto ${index + 1}`}
-                fill
-                className="object-contain"
-                sizes="100vw"
-                priority
-              />
-            </button>
-          )}
+          </button>
         </div>
 
         <button
@@ -409,8 +575,7 @@ function CarouselView({
       <div className="border-t border-white/5 bg-black/40 px-4 py-4 backdrop-blur">
         <div className="mx-auto mb-3 flex max-w-5xl items-center justify-between text-sm text-[#a89070]">
           <span>
-            {index + 1} / {MEDIA.length}
-            {item.type === "video" ? " · Video" : ""}
+            {index + 1} / {PHOTOS.length}
           </span>
           <span className="text-xs tracking-wide uppercase opacity-70">
             Desliza o usa ← →
@@ -418,9 +583,9 @@ function CarouselView({
         </div>
         <div
           ref={filmRef}
-          className="mx-auto flex max-w-5xl gap-2 overflow-x-auto pb-1 scrollbar-thin"
+          className="mx-auto flex max-w-5xl gap-2 overflow-x-auto pb-1"
         >
-          {MEDIA.map((m, i) => (
+          {PHOTOS.map((m, i) => (
             <button
               key={m.src}
               type="button"
@@ -428,24 +593,17 @@ function CarouselView({
               onClick={() => setIndex(i)}
               className={`relative h-16 w-12 shrink-0 overflow-hidden rounded-sm transition-all duration-300 sm:h-20 sm:w-14 ${
                 i === index
-                  ? "ring-2 ring-[#c9a962] scale-105 opacity-100"
+                  ? "scale-105 opacity-100 ring-2 ring-[#c9a962]"
                   : "opacity-45 hover:opacity-80"
               }`}
             >
               <Image
-                src={`/fotos/${mediaThumb(m)}`}
+                src={`/fotos/${m.src}`}
                 alt=""
                 fill
                 className="object-cover"
                 sizes="56px"
               />
-              {m.type === "video" && (
-                <span className="absolute inset-0 flex items-center justify-center bg-black/30">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="white">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </span>
-              )}
             </button>
           ))}
         </div>
@@ -470,10 +628,8 @@ function StoryView({
   progress: number;
   setProgress: (v: number | ((n: number) => number)) => void;
   onExit: () => void;
-  onOpenModes: () => void;
 }) {
-  const item = MEDIA[index];
-  const isVideo = item.type === "video";
+  const item = PHOTOS[index];
   const touchX = useRef<number | null>(null);
   const progressRef = useRef(progress);
 
@@ -482,17 +638,17 @@ function StoryView({
   }, [progress]);
 
   const advance = useEffectEvent(() => {
-    setIndex((i) => (i + 1) % MEDIA.length);
+    setIndex((i) => (i + 1) % PHOTOS.length);
     setProgress(0);
   });
 
   const goPrev = useEffectEvent(() => {
-    setIndex((i) => (i - 1 + MEDIA.length) % MEDIA.length);
+    setIndex((i) => (i - 1 + PHOTOS.length) % PHOTOS.length);
     setProgress(0);
   });
 
   useEffect(() => {
-    if (!playing || isVideo) return;
+    if (!playing) return;
     let raf = 0;
     const start = performance.now() - progressRef.current * SLIDE_MS;
 
@@ -507,7 +663,7 @@ function StoryView({
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [playing, index, isVideo, setProgress, advance]);
+  }, [playing, index, setProgress, advance]);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -517,17 +673,19 @@ function StoryView({
         setPlaying(!playing);
       }
       if (e.key === "ArrowRight") {
-        setIndex((i) => (i + 1) % MEDIA.length);
+        setIndex((i) => (i + 1) % PHOTOS.length);
         setProgress(0);
       }
       if (e.key === "ArrowLeft") {
-        setIndex((i) => (i - 1 + MEDIA.length) % MEDIA.length);
+        setIndex((i) => (i - 1 + PHOTOS.length) % PHOTOS.length);
         setProgress(0);
       }
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
   }, [onExit, playing, setPlaying, setIndex, setProgress]);
+
+  if (!item) return null;
 
   return (
     <div
@@ -549,15 +707,13 @@ function StoryView({
         <div className="h-0.5 overflow-hidden rounded-full bg-white/10">
           <div
             className="h-full rounded-full bg-white/35"
-            style={{
-              width: `${((index + 1) / MEDIA.length) * 100}%`,
-            }}
+            style={{ width: `${((index + 1) / PHOTOS.length) * 100}%` }}
           />
         </div>
         <div className="h-1 overflow-hidden rounded-full bg-white/15">
           <div
             className="h-full rounded-full bg-[#c9a962] transition-[width] duration-100 ease-linear"
-            style={{ width: `${(isVideo ? 0 : progress) * 100}%` }}
+            style={{ width: `${progress * 100}%` }}
           />
         </div>
       </div>
@@ -571,7 +727,7 @@ function StoryView({
           Salir
         </button>
         <p className="text-sm text-white/60">
-          {index + 1} / {MEDIA.length}
+          {index + 1} / {PHOTOS.length}
         </p>
         <button
           type="button"
@@ -582,7 +738,6 @@ function StoryView({
         </button>
       </div>
 
-      {/* Tap zones */}
       <button
         type="button"
         aria-label="Anterior"
@@ -598,26 +753,14 @@ function StoryView({
 
       <div className="flex h-full items-center justify-center px-4 pb-16 pt-20">
         <div key={item.src} className="album-kenburns relative h-full w-full max-w-6xl">
-          {isVideo ? (
-            <video
-              src={`/fotos/${item.src}`}
-              poster={`/fotos/${item.poster}`}
-              controls
-              autoPlay
-              playsInline
-              className="mx-auto max-h-full max-w-full object-contain"
-              onEnded={advance}
-            />
-          ) : (
-            <Image
-              src={`/fotos/${item.src}`}
-              alt={`Foto ${index + 1}`}
-              fill
-              className="object-contain"
-              sizes="100vw"
-              priority
-            />
-          )}
+          <Image
+            src={`/fotos/${item.src}`}
+            alt={`Foto ${index + 1}`}
+            fill
+            className="object-contain"
+            sizes="100vw"
+            priority
+          />
         </div>
       </div>
 
@@ -628,7 +771,7 @@ function StoryView({
   );
 }
 
-function Lightbox({
+function PhotoLightbox({
   index,
   onClose,
   onPrev,
@@ -639,11 +782,12 @@ function Lightbox({
   onPrev: () => void;
   onNext: () => void;
 }) {
-  const current = MEDIA[index];
+  const current = PHOTOS[index];
+  if (!current) return null;
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/95 animate-[fade-in_0.2s_ease-out]"
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/95"
       onClick={onClose}
     >
       <button
@@ -654,8 +798,7 @@ function Lightbox({
         ×
       </button>
       <div className="absolute top-5 left-1/2 z-10 -translate-x-1/2 text-sm tracking-widest text-white/50">
-        {index + 1} / {MEDIA.length}
-        {current.type === "video" ? " · Video" : ""}
+        {index + 1} / {PHOTOS.length}
       </div>
       <button
         className="absolute left-3 z-10 select-none text-5xl leading-none text-white/60 transition-colors hover:text-white sm:left-6"
@@ -671,26 +814,14 @@ function Lightbox({
         className="relative flex h-full w-full items-center justify-center px-14 py-10"
         onClick={(e) => e.stopPropagation()}
       >
-        {current.type === "video" ? (
-          <video
-            key={current.src}
-            src={`/fotos/${current.src}`}
-            poster={`/fotos/${current.poster}`}
-            controls
-            autoPlay
-            playsInline
-            className="max-h-full max-w-full object-contain"
-          />
-        ) : (
-          <Image
-            src={`/fotos/${current.src}`}
-            alt={`Foto ${index + 1}`}
-            fill
-            className="object-contain"
-            sizes="100vw"
-            priority
-          />
-        )}
+        <Image
+          src={`/fotos/${current.src}`}
+          alt={`Foto ${index + 1}`}
+          fill
+          className="object-contain"
+          sizes="100vw"
+          priority
+        />
       </div>
       <button
         className="absolute right-3 z-10 select-none text-5xl leading-none text-white/60 transition-colors hover:text-white sm:right-6"
@@ -703,5 +834,144 @@ function Lightbox({
         ›
       </button>
     </div>
+  );
+}
+
+function VideosScreen({
+  onBack,
+  activeIndex,
+  setActiveIndex,
+}: {
+  onBack: () => void;
+  activeIndex: number | null;
+  setActiveIndex: (i: number | null) => void;
+}) {
+  const active = activeIndex !== null ? VIDEOS[activeIndex] : null;
+
+  useEffect(() => {
+    if (activeIndex === null) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setActiveIndex(null);
+      if (e.key === "ArrowRight") {
+        setActiveIndex(((activeIndex ?? 0) + 1) % VIDEOS.length);
+      }
+      if (e.key === "ArrowLeft") {
+        setActiveIndex(
+          ((activeIndex ?? 0) - 1 + VIDEOS.length) % VIDEOS.length
+        );
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [activeIndex, setActiveIndex]);
+
+  return (
+    <section className="mx-auto min-h-screen max-w-6xl px-4 py-10 sm:px-6">
+      <div className="mb-10 text-center">
+        <button
+          type="button"
+          onClick={onBack}
+          className="mb-6 text-xs tracking-widest text-[#c9a962] uppercase transition hover:text-[#f0e6d3]"
+        >
+          ← Menú
+        </button>
+        <p className="mb-3 text-xs tracking-[0.35em] text-[#c9a962] uppercase">
+          Clips del día
+        </p>
+        <h2
+          className="mb-3 text-4xl font-light tracking-wide sm:text-5xl"
+          style={{ fontFamily: "var(--font-cormorant)" }}
+        >
+          Videos
+        </h2>
+        <p className="text-[#a89070]">
+          {VIDEO_COUNT} videos · toca uno para reproducir
+        </p>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
+        {VIDEOS.map((video, index) => (
+          <button
+            key={video.src}
+            type="button"
+            onClick={() => setActiveIndex(index)}
+            className="group relative aspect-video overflow-hidden rounded-xl border border-white/10 text-left transition hover:border-[#c9a962]/50"
+          >
+            <Image
+              src={`/fotos/${video.poster}`}
+              alt={`Video ${index + 1}`}
+              fill
+              className="object-cover transition duration-700 group-hover:scale-105"
+              sizes="(max-width: 640px) 100vw, 50vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 shadow-lg transition group-hover:scale-110">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#0a0a0a">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+            </div>
+            <p className="absolute bottom-3 left-4 text-sm tracking-wide text-white/90">
+              Video {index + 1}
+            </p>
+          </button>
+        ))}
+      </div>
+
+      {active && activeIndex !== null && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/95"
+          onClick={() => setActiveIndex(null)}
+        >
+          <button
+            className="absolute top-4 right-5 z-10 text-4xl leading-none text-white/70 hover:text-white"
+            onClick={() => setActiveIndex(null)}
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+          <div className="absolute top-5 left-1/2 -translate-x-1/2 text-sm tracking-widest text-white/50">
+            Video {activeIndex + 1} / {VIDEOS.length}
+          </div>
+          <button
+            className="absolute left-3 z-10 text-5xl text-white/60 hover:text-white sm:left-6"
+            onClick={(e) => {
+              e.stopPropagation();
+              setActiveIndex(
+                (activeIndex - 1 + VIDEOS.length) % VIDEOS.length
+              );
+            }}
+            aria-label="Anterior"
+          >
+            ‹
+          </button>
+          <div
+            className="relative flex h-full w-full items-center justify-center px-14 py-16"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <video
+              key={active.src}
+              src={`/fotos/${active.src}`}
+              poster={`/fotos/${active.poster}`}
+              controls
+              autoPlay
+              playsInline
+              className="max-h-full max-w-full object-contain"
+            />
+          </div>
+          <button
+            className="absolute right-3 z-10 text-5xl text-white/60 hover:text-white sm:right-6"
+            onClick={(e) => {
+              e.stopPropagation();
+              setActiveIndex((activeIndex + 1) % VIDEOS.length);
+            }}
+            aria-label="Siguiente"
+          >
+            ›
+          </button>
+        </div>
+      )}
+    </section>
   );
 }

@@ -125,6 +125,10 @@ body {
   to { transform: scale(1.06); }
 }
 
+.album-kenburns-zoom-slow {
+  animation: album-kenburns-zoom 18s ease-out forwards;
+}
+
 /* Botones táctiles cómodos en móvil */
 @media (max-width: 640px) {
   .touch-target {

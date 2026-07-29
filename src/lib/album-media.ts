@@ -164,6 +164,16 @@ export const MEDIA: MediaItem[] = [
 export const PHOTO_COUNT = MEDIA.filter((m) => m.type === "photo").length;
 export const VIDEO_COUNT = MEDIA.filter((m) => m.type === "video").length;
 
+export type PhotoItem = Extract<MediaItem, { type: "photo" }>;
+export type VideoItem = Extract<MediaItem, { type: "video" }>;
+
+export const PHOTOS: PhotoItem[] = MEDIA.filter(
+  (m): m is PhotoItem => m.type === "photo"
+);
+export const VIDEOS: VideoItem[] = MEDIA.filter(
+  (m): m is VideoItem => m.type === "video"
+);
+
 export function mediaThumb(item: MediaItem): string {
   return item.type === "video" ? item.poster : item.src;
 }
