@@ -2,64 +2,66 @@
 
 import { useState } from "react";
 import { LiveChat } from "@/components/LiveChat";
+import { useI18n } from "@/components/I18nProvider";
 
 interface StreamChatPanelProps {
   chatEnabled: boolean;
 }
 
 export function StreamChatPanel({ chatEnabled }: StreamChatPanelProps) {
+  const { dict } = useI18n();
   const [showChat, setShowChat] = useState(true);
 
   const chatPanel = (
-    <div className="flex flex-col h-full min-h-0 bg-white">
+    <div className="flex h-full min-h-0 flex-col bg-white">
       <LiveChat enabled={chatEnabled} />
     </div>
   );
 
   return (
     <>
-      <div className="lg:hidden w-full">
+      <div className="w-full lg:hidden">
         <button
           type="button"
           onClick={() => setShowChat((v) => !v)}
-          className="touch-target w-full flex items-center justify-between px-4 py-3.5 rounded-xl bg-cream border border-gold/25 shadow-sm text-left"
+          className="touch-target flex w-full items-center justify-between rounded-xl border border-gold/25 bg-cream px-4 py-3.5 text-left shadow-sm"
           aria-expanded={showChat}
         >
           <div>
             <span
-              className="font-display font-semibold text-lg"
+              className="font-display text-lg font-semibold"
               style={{ fontFamily: "var(--font-playfair)" }}
             >
-              Mensajes para Liesbeth & Guillermo
+              {dict.chat.titleCouple}
             </span>
-            <p className="text-sm text-foreground/75 mt-0.5">
-              {chatEnabled ? "Deja tus buenos deseos" : "Disponible durante la transmisión"}
+            <p className="mt-0.5 text-sm text-foreground/75">
+              {chatEnabled ? dict.chat.wishes : dict.chat.availableDuring}
             </p>
           </div>
-          <span className="text-gold text-xl font-light" aria-hidden>
+          <span className="text-xl font-light text-gold" aria-hidden>
             {showChat ? "−" : "+"}
           </span>
         </button>
         {showChat && (
-          <div className="mt-3 rounded-xl bg-cream border border-gold/25 shadow-sm overflow-hidden h-[50vw] max-h-[360px] min-h-[240px]">
+          <div className="mt-3 h-[50vw] max-h-[360px] min-h-[240px] overflow-hidden rounded-xl border border-gold/25 bg-cream shadow-sm">
             {chatPanel}
           </div>
         )}
       </div>
 
-      <div className="hidden lg:flex flex-col flex-1 min-h-0 h-full rounded-xl bg-cream border border-gold/25 shadow-sm overflow-hidden">
-        <div className="px-4 py-2.5 border-b border-gold/20 bg-gold-light/30 shrink-0">
+      <div className="hidden h-full min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-gold/25 bg-cream shadow-sm lg:flex">
+        <div className="shrink-0 border-b border-gold/20 bg-gold-light/30 px-4 py-2.5">
           <h2
-            className="text-lg font-display font-semibold leading-tight"
+            className="font-display text-lg leading-tight font-semibold"
             style={{ fontFamily: "var(--font-playfair)" }}
           >
-            Mensajes para la pareja
+            {dict.chat.titleShort}
           </h2>
           <p className="text-xs text-foreground/75">
-            {chatEnabled ? "Escribe tu nombre y deja un mensaje" : "Disponible durante la transmisión"}
+            {chatEnabled ? dict.chat.writeName : dict.chat.availableDuring}
           </p>
         </div>
-        <div className="flex-1 min-h-0 overflow-hidden">{chatPanel}</div>
+        <div className="min-h-0 flex-1 overflow-hidden">{chatPanel}</div>
       </div>
     </>
   );

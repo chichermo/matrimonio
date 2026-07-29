@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { getWeddingDate, weddingConfig } from "@/lib/config";
+import { useI18n } from "@/components/I18nProvider";
 
 declare global {
   interface Window {
@@ -151,10 +152,12 @@ function PresentationPoster({
   message,
   submessage,
   onWatchLive,
+  watchLiveLabel,
 }: {
   message: string;
   submessage?: string;
   onWatchLive?: () => void;
+  watchLiveLabel: string;
 }) {
   const thumb = weddingConfig.thumbnailUrl;
 
@@ -191,7 +194,7 @@ function PresentationPoster({
             onClick={onWatchLive}
             className="touch-target mt-6 px-6 py-3 rounded-full bg-gold text-white text-sm sm:text-base font-medium shadow-lg hover:bg-[#b8944a] transition-colors"
           >
-            La transmisión ya comenzó — ver en vivo
+            {watchLiveLabel}
           </button>
         )}
       </div>
@@ -200,6 +203,7 @@ function PresentationPoster({
 }
 
 export function StreamPlayer({ className, fullscreen = false, onShowPlayerChange }: StreamPlayerProps) {
+  const { dict } = useI18n();
   const { youtubeVideoId, offlineMessage } = weddingConfig;
   const weddingDate = getWeddingDate();
   const [showYouTube, setShowYouTube] = useState(false);
@@ -238,11 +242,10 @@ export function StreamPlayer({ className, fullscreen = false, onShowPlayerChange
       <PresentationPoster
         message={offlineMessage}
         submessage={
-          youtubeVideoId
-            ? "La transmisión se conectará automáticamente el día de la boda"
-            : "Actualiza esta página cuando comience la transmisión"
+          youtubeVideoId ? dict.player.autoConnect : dict.player.refreshHint
         }
         onWatchLive={youtubeVideoId ? handleWatchLive : undefined}
+        watchLiveLabel={dict.player.startedCta}
       />
     </div>
   );

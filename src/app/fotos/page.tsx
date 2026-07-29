@@ -21,6 +21,8 @@ import {
   type AlbumVideo,
 } from "@/lib/album-media";
 import { weddingConfig } from "@/lib/config";
+import { useI18n } from "@/components/I18nProvider";
+import { t } from "@/lib/i18n/dictionaries";
 
 type Screen = "cover" | "menu" | "photos" | "videos";
 type ViewMode = "grid" | "carousel" | "story";
@@ -151,6 +153,8 @@ export default function FotosPage() {
 }
 
 function CoverScreen({ onEnter }: { onEnter: () => void }) {
+  const { dict } = useI18n();
+
   return (
     <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 text-center">
       {COVER_PHOTO && (
@@ -180,11 +184,10 @@ function CoverScreen({ onEnter }: { onEnter: () => void }) {
           className="mb-3 text-2xl font-light tracking-wide text-[#f0e6d3] sm:text-3xl"
           style={{ fontFamily: "var(--font-cormorant)" }}
         >
-          Álbum de nuestro día
+          {dict.album.coverKicker}
         </p>
         <p className="mx-auto mb-10 max-w-md text-base leading-relaxed text-[#a89070] sm:text-lg">
-          Un recorrido por los momentos de nuestra boda. Elige cómo quieres
-          ver las fotos, o mira los videos por separado.
+          {dict.album.coverBody}
         </p>
 
         <button
@@ -192,19 +195,22 @@ function CoverScreen({ onEnter }: { onEnter: () => void }) {
           onClick={onEnter}
           className="inline-flex items-center gap-3 rounded-full bg-[#c9a962] px-8 py-4 text-sm tracking-[0.2em] text-[#0a0a0a] uppercase transition hover:bg-[#d4b978] active:scale-[0.98]"
         >
-          Entrar al álbum
+          {dict.album.enter}
           <span aria-hidden>→</span>
         </button>
 
         <p className="mt-8 text-sm text-[#a89070]/80">
-          {PHOTO_COUNT} fotografías · {VIDEO_COUNT} videos
+          {t(dict.album.photosVideos, {
+            photos: PHOTO_COUNT,
+            videos: VIDEO_COUNT,
+          })}
         </p>
 
         <Link
           href="/"
           className="mt-6 inline-block text-xs tracking-widest text-[#c9a962]/80 uppercase transition hover:text-[#f0e6d3]"
         >
-          ← Volver al inicio
+          {dict.album.backHome}
         </Link>
       </div>
     </section>
@@ -220,6 +226,8 @@ function MenuScreen({
   onSelectVideos: () => void;
   onBack: () => void;
 }) {
+  const { dict } = useI18n();
+
   const photoModes: {
     id: ViewMode;
     title: string;
@@ -228,8 +236,8 @@ function MenuScreen({
   }[] = [
     {
       id: "grid",
-      title: "Galería",
-      desc: "Explora todas las fotos en un mural elegante. Ideal para mirar con calma.",
+      title: dict.album.gridTitle,
+      desc: dict.album.gridDesc,
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
           <rect x="3" y="3" width="8" height="8" rx="1" />
@@ -241,8 +249,8 @@ function MenuScreen({
     },
     {
       id: "carousel",
-      title: "Carrusel",
-      desc: "Una foto a la vez, con miniaturas abajo. Desliza o usa las flechas.",
+      title: dict.album.carouselTitle,
+      desc: dict.album.carouselDesc,
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
           <rect x="2" y="6" width="20" height="12" rx="2" />
@@ -252,8 +260,8 @@ function MenuScreen({
     },
     {
       id: "story",
-      title: "Presentación",
-      desc: "Pantalla completa con avance automático. Perfecta para compartir en familia.",
+      title: dict.album.storyTitle,
+      desc: dict.album.storyDesc,
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
           <path d="M8 5v14l11-7z" />
@@ -270,26 +278,23 @@ function MenuScreen({
           onClick={onBack}
           className="mb-6 text-xs tracking-widest text-[#c9a962] uppercase transition hover:text-[#f0e6d3]"
         >
-          ← Portada
+          {dict.album.backCover}
         </button>
         <p className="mb-3 text-xs tracking-[0.35em] text-[#c9a962] uppercase">
-          ¿Cómo quieres mirar?
+          {dict.album.howToWatch}
         </p>
         <h2
           className="mb-3 text-4xl font-light tracking-wide sm:text-5xl"
           style={{ fontFamily: "var(--font-cormorant)" }}
         >
-          Elige tu experiencia
+          {dict.album.chooseExperience}
         </h2>
-        <p className="mx-auto max-w-lg text-[#a89070]">
-          Las fotos y los videos están separados para que puedas disfrutarlos
-          a tu ritmo.
-        </p>
+        <p className="mx-auto max-w-lg text-[#a89070]">{dict.album.menuIntro}</p>
       </div>
 
       <div className="mb-4">
         <h3 className="mb-4 text-center text-xs tracking-[0.3em] text-[#c9a962]/90 uppercase">
-          Fotos · {PHOTO_COUNT}
+          {dict.album.photos} · {PHOTO_COUNT}
         </h3>
         <div className="grid gap-3 sm:grid-cols-3 sm:gap-4">
           {photoModes.map((opt, i) => (
@@ -317,7 +322,7 @@ function MenuScreen({
 
       <div className="mt-10 sm:mt-14">
         <h3 className="mb-4 text-center text-xs tracking-[0.3em] text-[#c9a962]/90 uppercase">
-          Videos · {VIDEO_COUNT}
+          {dict.album.videos} · {VIDEO_COUNT}
         </h3>
         <button
           type="button"
@@ -335,16 +340,15 @@ function MenuScreen({
                 className="mb-1 text-2xl font-light tracking-wide sm:text-3xl"
                 style={{ fontFamily: "var(--font-cormorant)" }}
               >
-                Ver videos
+                {dict.album.viewVideos}
               </p>
               <p className="max-w-md text-sm leading-relaxed text-[#a89070]">
-                Ceremonia completa en YouTube y clips cortos del día, en su
-                propia sección.
+                {dict.album.videosDesc}
               </p>
             </div>
           </div>
           <span className="text-sm tracking-widest text-[#c9a962] uppercase transition group-hover:translate-x-1">
-            Abrir →
+            {dict.album.open}
           </span>
         </button>
       </div>
@@ -361,10 +365,11 @@ function PhotosHeader({
   onChangeMode: (m: ViewMode) => void;
   onBack: () => void;
 }) {
+  const { dict } = useI18n();
   const options: { id: ViewMode; label: string }[] = [
-    { id: "grid", label: "Galería" },
-    { id: "carousel", label: "Carrusel" },
-    { id: "story", label: "Presentación" },
+    { id: "grid", label: dict.album.grid },
+    { id: "carousel", label: dict.album.carousel },
+    { id: "story", label: dict.album.story },
   ];
 
   return (
@@ -375,7 +380,7 @@ function PhotosHeader({
           onClick={onBack}
           className="self-start text-xs tracking-widest text-[#c9a962] uppercase transition hover:text-[#f0e6d3]"
         >
-          ← Menú
+          {dict.album.backMenu}
         </button>
 
         <div
@@ -403,7 +408,7 @@ function PhotosHeader({
         </div>
 
         <p className="hidden text-sm text-[#a89070] sm:block">
-          {PHOTO_COUNT} fotos
+          {PHOTO_COUNT} {dict.album.photos.toLowerCase()}
         </p>
       </div>
     </header>
@@ -496,6 +501,7 @@ function CarouselView({
   const touchX = useRef<number | null>(null);
   const filmRef = useRef<HTMLDivElement>(null);
   const item = PHOTOS[index];
+  const { dict } = useI18n();
 
   const go = useCallback(
     (delta: number) => {
@@ -580,7 +586,7 @@ function CarouselView({
             {index + 1} / {PHOTOS.length}
           </span>
           <span className="text-xs tracking-wide uppercase opacity-70">
-            Desliza o usa ← →
+            {dict.album.swipeHint}
           </span>
         </div>
         <div
@@ -634,6 +640,7 @@ function StoryView({
   const item = PHOTOS[index];
   const touchX = useRef<number | null>(null);
   const progressRef = useRef(progress);
+  const { dict } = useI18n();
 
   useEffect(() => {
     progressRef.current = progress;
@@ -726,7 +733,7 @@ function StoryView({
           onClick={onExit}
           className="rounded-full border border-white/15 bg-black/40 px-4 py-2 text-xs tracking-widest text-white/80 uppercase backdrop-blur transition hover:bg-black/60"
         >
-          Salir
+          {dict.album.exit}
         </button>
         <p className="text-sm text-white/60">
           {index + 1} / {PHOTOS.length}
@@ -736,7 +743,7 @@ function StoryView({
           onClick={() => setPlaying(!playing)}
           className="rounded-full border border-white/15 bg-black/40 px-4 py-2 text-xs tracking-widest text-white/80 uppercase backdrop-blur transition hover:bg-black/60"
         >
-          {playing ? "Pausa" : "Play"}
+          {playing ? dict.album.pause : dict.album.play}
         </button>
       </div>
 
@@ -767,7 +774,7 @@ function StoryView({
       </div>
 
       <p className="absolute bottom-6 left-1/2 z-20 -translate-x-1/2 text-center text-xs tracking-wide text-white/40 uppercase">
-        Toca lados · Espacio pausa · Esc salir
+        {dict.album.storyHint}
       </p>
     </div>
   );
@@ -848,7 +855,18 @@ function VideosScreen({
   activeIndex: number | null;
   setActiveIndex: (i: number | null) => void;
 }) {
+  const { dict } = useI18n();
   const active = activeIndex !== null ? ALBUM_VIDEOS[activeIndex] : null;
+
+  const videoTitle = (video: AlbumVideo, index: number) => {
+    if (video.kind === "youtube") return dict.album.ceremonyTitle;
+    return t(dict.album.clipTitle, { n: index });
+  };
+
+  const videoSubtitle = (video: AlbumVideo) => {
+    if (video.kind === "youtube") return dict.album.ceremonySubtitle;
+    return dict.album.clipSubtitle;
+  };
 
   useEffect(() => {
     if (activeIndex === null) return;
@@ -875,19 +893,19 @@ function VideosScreen({
           onClick={onBack}
           className="mb-6 text-xs tracking-widest text-[#c9a962] uppercase transition hover:text-[#f0e6d3]"
         >
-          ← Menú
+          {dict.album.backMenu}
         </button>
         <p className="mb-3 text-xs tracking-[0.35em] text-[#c9a962] uppercase">
-          Clips del día
+          {dict.album.clipsKicker}
         </p>
         <h2
           className="mb-3 text-4xl font-light tracking-wide sm:text-5xl"
           style={{ fontFamily: "var(--font-cormorant)" }}
         >
-          Videos
+          {dict.album.videos}
         </h2>
         <p className="text-[#a89070]">
-          {VIDEO_COUNT} videos · toca uno para reproducir
+          {t(dict.album.videosCount, { count: VIDEO_COUNT })}
         </p>
       </div>
 
@@ -896,6 +914,8 @@ function VideosScreen({
           <VideoCard
             key={video.id}
             video={video}
+            title={videoTitle(video, index)}
+            subtitle={videoSubtitle(video)}
             featured={index === 0 && video.kind === "youtube"}
             onClick={() => setActiveIndex(index)}
           />
@@ -915,7 +935,8 @@ function VideosScreen({
             ×
           </button>
           <div className="absolute top-5 left-1/2 max-w-[70%] -translate-x-1/2 truncate text-center text-sm tracking-wide text-white/50">
-            {active.title} · {activeIndex + 1} / {ALBUM_VIDEOS.length}
+            {videoTitle(active, activeIndex)} · {activeIndex + 1} /{" "}
+            {ALBUM_VIDEOS.length}
           </div>
           <button
             className="absolute left-3 z-10 text-5xl text-white/60 hover:text-white sm:left-6"
@@ -974,10 +995,14 @@ function VideosScreen({
 
 function VideoCard({
   video,
+  title,
+  subtitle,
   featured,
   onClick,
 }: {
   video: AlbumVideo;
+  title: string;
+  subtitle: string;
   featured?: boolean;
   onClick: () => void;
 }) {
@@ -996,7 +1021,7 @@ function VideoCard({
     >
       <Image
         src={thumb}
-        alt={video.title}
+        alt={title}
         fill
         className="object-cover transition duration-700 group-hover:scale-105"
         sizes={featured ? "100vw" : "(max-width: 640px) 100vw, 50vw"}
@@ -1019,11 +1044,9 @@ function VideoCard({
           className="text-lg tracking-wide text-white sm:text-xl"
           style={{ fontFamily: "var(--font-cormorant)" }}
         >
-          {video.title}
+          {title}
         </p>
-        {video.subtitle && (
-          <p className="mt-0.5 text-sm text-white/65">{video.subtitle}</p>
-        )}
+        <p className="mt-0.5 text-sm text-white/65">{subtitle}</p>
       </div>
     </button>
   );

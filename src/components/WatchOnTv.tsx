@@ -8,8 +8,10 @@ import {
   getYouTubeLiveUrl,
   getYouTubeWatchUrl,
 } from "@/lib/config";
+import { useI18n } from "@/components/I18nProvider";
 
 export function WatchOnTv() {
+  const { dict } = useI18n();
   const [qrUrl, setQrUrl] = useState("");
   const youtubeWatch = getYouTubeWatchUrl();
   const youtubeLive = getYouTubeLiveUrl();
@@ -22,86 +24,83 @@ export function WatchOnTv() {
   return (
     <div className="rounded-xl border border-gold/25 bg-cream/90 px-4 py-4 sm:px-5 sm:py-5">
       <h2
-        className="text-lg sm:text-xl font-display font-semibold mb-1"
+        className="mb-1 font-display text-lg font-semibold sm:text-xl"
         style={{ fontFamily: "var(--font-playfair)" }}
       >
-        ¿Ver en Smart TV?
+        {dict.watchTv.title}
       </h2>
-      <p className="text-sm sm:text-base text-foreground/75 mb-4">
-        Tres formas fáciles para ver en televisor
+      <p className="mb-4 text-sm text-foreground/75 sm:text-base">
+        {dict.watchTv.subtitle}
       </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
-        <div className="rounded-lg bg-white border border-gold/15 p-3 sm:p-4">
-          <p className="text-sm font-semibold text-gold uppercase tracking-wide mb-2">
-            Opción 1 · La más fácil
+      <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className="rounded-lg border border-gold/15 bg-white p-3 sm:p-4">
+          <p className="mb-2 text-sm font-semibold tracking-wide text-gold uppercase">
+            {dict.watchTv.opt1Title}
           </p>
-          <p className="text-sm sm:text-base text-foreground/85 mb-3">
-            Abre la app <strong>YouTube</strong> en tu TV y busca la transmisión, o usa este enlace:
+          <p className="mb-3 text-sm text-foreground/85 sm:text-base">
+            {dict.watchTv.opt1Body}
           </p>
           {youtubeLive ? (
             <a
               href={youtubeLive}
               target="_blank"
               rel="noopener noreferrer"
-              className="touch-target inline-flex items-center justify-center w-full px-3 py-2.5 rounded-lg bg-gold text-white text-sm font-medium hover:bg-[#b8944a] transition-colors"
+              className="touch-target inline-flex w-full items-center justify-center rounded-lg bg-gold px-3 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#b8944a]"
             >
-              Abrir en YouTube
+              {dict.watchTv.openYoutube}
             </a>
           ) : (
-            <p className="text-xs text-foreground/50 italic">Disponible cuando configures el video</p>
+            <p className="text-xs text-foreground/50 italic">{dict.watchTv.notReady}</p>
           )}
         </div>
 
-        <div className="rounded-lg bg-white border border-gold/15 p-3 sm:p-4">
-          <p className="text-sm font-semibold text-gold uppercase tracking-wide mb-2">
-            Opción 2 · Chromecast
+        <div className="rounded-lg border border-gold/15 bg-white p-3 sm:p-4">
+          <p className="mb-2 text-sm font-semibold tracking-wide text-gold uppercase">
+            {dict.watchTv.opt2Title}
           </p>
-          <p className="text-sm text-foreground/80">
-            Desde el <strong>celular</strong>, abre esta página en Chrome y toca el ícono de{" "}
-            <strong>Transmitir</strong> en el reproductor de YouTube (esquina del video).
-          </p>
+          <p className="text-sm text-foreground/80">{dict.watchTv.opt2Body}</p>
         </div>
 
-        <div className="rounded-lg bg-white border border-gold/15 p-3 sm:p-4">
-          <p className="text-sm font-semibold text-gold uppercase tracking-wide mb-2">
-            Opción 3 · Navegador de TV
+        <div className="rounded-lg border border-gold/15 bg-white p-3 sm:p-4">
+          <p className="mb-2 text-sm font-semibold tracking-wide text-gold uppercase">
+            {dict.watchTv.opt3Title}
           </p>
-          <p className="text-sm sm:text-base text-foreground/85 mb-3">
-            En Samsung, LG o Android TV, abre el navegador y visita la versión para TV:
+          <p className="mb-3 text-sm text-foreground/85 sm:text-base">
+            {dict.watchTv.opt3Body}
           </p>
           <Link
             href="/tv"
-            className="touch-target inline-flex items-center justify-center w-full px-3 py-2.5 rounded-lg border border-gold text-gold text-sm font-medium hover:bg-gold/10 transition-colors"
+            className="touch-target inline-flex w-full items-center justify-center rounded-lg border border-gold px-3 py-2.5 text-sm font-medium text-gold transition-colors hover:bg-gold/10"
           >
-            Abrir versión TV
+            {dict.watchTv.openTv}
           </Link>
         </div>
       </div>
 
       {qrUrl && (
-        <div className="flex flex-col sm:flex-row items-center gap-4 pt-3 border-t border-gold/15">
+        <div className="flex flex-col items-center gap-4 border-t border-gold/15 pt-3 sm:flex-row">
           <img
             src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(qrUrl)}`}
-            alt={`Código QR para ${qrUrl}`}
+            alt={dict.watchTv.scanTitle}
             width={120}
             height={120}
-            className="rounded-lg border border-gold/20 shrink-0"
+            className="shrink-0 rounded-lg border border-gold/20"
           />
-          <div className="text-center sm:text-left text-sm text-foreground/70">
-            <p className="font-medium text-foreground/90 mb-1">Escanea con el celular</p>
-            <p>
-              Abre la cámara, escanea el QR y luego transmite a tu TV con Chromecast o AirPlay.
+          <div className="text-center text-sm text-foreground/70 sm:text-left">
+            <p className="mb-1 font-medium text-foreground/90">
+              {dict.watchTv.scanTitle}
             </p>
-            <p className="text-xs text-foreground/45 mt-2 break-all">{tvPage}</p>
+            <p>{dict.watchTv.scanBody}</p>
+            <p className="mt-2 text-xs break-all text-foreground/45">{tvPage}</p>
           </div>
         </div>
       )}
 
       {youtubeWatch && (
-        <p className="text-xs text-foreground/45 mt-3 text-center sm:text-left">
-          Enlace directo YouTube:{" "}
-          <a href={youtubeWatch} className="text-gold hover:underline break-all">
+        <p className="mt-3 text-center text-xs text-foreground/45 sm:text-left">
+          {dict.watchTv.youtubeDirect}{" "}
+          <a href={youtubeWatch} className="break-all text-gold hover:underline">
             {youtubeWatch}
           </a>
         </p>
